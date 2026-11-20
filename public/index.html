@@ -6,12 +6,12 @@
   <title>REMEMBER - Twitch First Redeemer Overlay</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Kanit:wght@300;400;500;600;700&family=Mitr:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=Kanit:wght@300;400;500;600;700&amp;family=Mitr:wght@400;500;600&amp;family=Outfit:wght@400;500;600;700;800&amp;family=Prompt:wght@400;500;600;700&amp;family=Sarabun:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
   <!-- Toast Notification -->
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden" aria-live="polite" role="status"></div>
 
   <!-- 1. GUEST / LANDING VIEW (Shown if not logged in) -->
   <div id="guestView" class="view-container hidden">
@@ -35,7 +35,7 @@
           </svg>
           Sign in with Twitch
         </a>
-        <a id="devLoginBtn" href="/auth/dev-login" class="btn btn-secondary" style="display: none; margin-top: 12px;">
+        <a id="devLoginBtn" href="/auth/dev-login" class="btn btn-secondary dev-login-btn">
           🎮 เข้าสู่ระบบทดสอบด่วน (Dev Quick Login)
         </a>
       </div>
@@ -54,7 +54,7 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">🎨</div>
-          <h3>Custom Badge & Theme</h3>
+          <h3>Custom Badge &amp; Theme</h3>
           <p>ตั้งข้อความ Badge และเลือกสีให้เข้ากับธีมช่องสตรีมของคุณได้เอง</p>
         </div>
       </div>
@@ -78,12 +78,12 @@
       </div>
 
       <div class="header-user">
-        <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+        <img id="userAvatar" class="user-avatar" src="https://static-cdn.jtvnw.net/user-default-pictures-uv/75305d54-c7cc-40d1-bbbb-6a3f15440b54-profile_image-70x70.png" alt="User Avatar" width="40" height="40">
         <div class="user-meta">
           <div id="userDisplayName" class="user-name">Streamer</div>
           <div id="userLogin" class="user-handle">@streamer</div>
         </div>
-        <button id="logoutBtn" class="btn btn-ghost btn-sm">Log out</button>
+        <button type="button" id="logoutBtn" class="btn btn-ghost btn-sm">Log out</button>
       </div>
     </header>
 
@@ -107,14 +107,14 @@
             <h2 class="card-title">OBS Browser Source URL</h2>
             <p class="card-desc">นำลิงก์นี้ไปใส่ใน Browser Source ของ OBS Studio (ขนาดแนะนำ: กว้าง 600 x สูง 90)</p>
           </div>
-          <button id="regenerateTokenBtn" class="btn btn-ghost btn-sm" title="สร้าง Token ใหม่กรณีทำลิงก์หลุด">
+          <button type="button" id="regenerateTokenBtn" class="btn btn-ghost btn-sm" aria-label="Regenerate overlay token" title="สร้าง Token ใหม่กรณีทำลิงก์หลุด">
             🔄 Regenerate Token
           </button>
         </div>
 
         <div class="url-input-group">
           <input type="text" id="overlayUrlInput" class="url-input" readonly>
-          <button id="copyUrlBtn" class="btn btn-primary">
+          <button type="button" id="copyUrlBtn" class="btn btn-primary">
             <span id="copyUrlText">Copy URL</span>
           </button>
           <a id="openOverlayLink" href="#" target="_blank" class="btn btn-secondary">
@@ -132,7 +132,7 @@
         </div>
       </section>
 
-      <!-- 2. Settings Form: Custom Badge & Whitelist Words -->
+      <!-- 2. Settings Form: Custom Badge and Whitelist Words -->
       <section class="card settings-card">
         <h2 class="card-title">การปรับแต่ง Overlay ประจำช่องของคุณ</h2>
         <p class="card-desc">ปรับเปลี่ยนข้อความป้าย สี และรายการแต้มที่อนุญาตให้แสดง</p>
@@ -142,7 +142,7 @@
             <!-- Custom Badge Text -->
             <div class="form-group">
               <label for="badgeTextInput">ข้อความ Badge (คนแรกของสตรีม)</label>
-              <input type="text" id="badgeTextInput" placeholder="เช่น 👑 1ST REDEEMER, 👑 คนแรกของสตรีม" required>
+              <input type="text" id="badgeTextInput" placeholder="เช่น 👑 1ST REDEEMER, 👑 คนแรกของสตรีม…" required>
             </div>
 
             <!-- Badge Accent Color -->
@@ -151,11 +151,11 @@
               <div class="color-picker-row">
                 <input type="color" id="badgeColorPicker" value="#fbbf24" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="color-chip" data-color="#fbbf24" style="background: #fbbf24;" title="Gold"></button>
-                  <button type="button" class="color-chip" data-color="#c084fc" style="background: #c084fc;" title="Neon Violet"></button>
-                  <button type="button" class="color-chip" data-color="#38bdf8" style="background: #38bdf8;" title="Sky Cyan"></button>
-                  <button type="button" class="color-chip" data-color="#fb7185" style="background: #fb7185;" title="Rose Pink"></button>
-                  <button type="button" class="color-chip" data-color="#34d399" style="background: #34d399;" title="Emerald"></button>
+                  <button type="button" class="color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold" aria-label="Gold"></button>
+                  <button type="button" class="color-chip" data-color="#c084fc" style="--chip-color: #c084fc;" title="Neon Violet" aria-label="Neon Violet"></button>
+                  <button type="button" class="color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan" aria-label="Sky Cyan"></button>
+                  <button type="button" class="color-chip" data-color="#fb7185" style="--chip-color: #fb7185;" title="Rose Pink" aria-label="Rose Pink"></button>
+                  <button type="button" class="color-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald" aria-label="Emerald"></button>
                 </div>
               </div>
             </div>
@@ -166,11 +166,11 @@
               <div class="color-picker-row">
                 <input type="color" id="badgeBgColorPicker" value="#451a03" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(245, 158, 11, 0.22)" style="background: rgba(245, 158, 11, 0.4);" title="Amber Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(147, 51, 234, 0.25)" style="background: rgba(147, 51, 234, 0.5);" title="Violet Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(14, 165, 233, 0.25)" style="background: rgba(14, 165, 233, 0.5);" title="Cyan Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(244, 63, 94, 0.25)" style="background: rgba(244, 63, 94, 0.5);" title="Rose Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(0, 0, 0, 0.5)" style="background: rgba(0, 0, 0, 0.7); border-color: #888;" title="Dark Solid"></button>
+                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(245, 158, 11, 0.22)" style="--chip-color: rgba(245, 158, 11, 0.4);" title="Amber Glass" aria-label="Amber Glass"></button>
+                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(147, 51, 234, 0.25)" style="--chip-color: rgba(147, 51, 234, 0.5);" title="Violet Glass" aria-label="Violet Glass"></button>
+                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(14, 165, 233, 0.25)" style="--chip-color: rgba(14, 165, 233, 0.5);" title="Cyan Glass" aria-label="Cyan Glass"></button>
+                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(244, 63, 94, 0.25)" style="--chip-color: rgba(244, 63, 94, 0.5);" title="Rose Glass" aria-label="Rose Glass"></button>
+                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(0, 0, 0, 0.5)" style="--chip-color: rgba(0, 0, 0, 0.7); --chip-border: #888;" title="Dark Solid" aria-label="Dark Solid"></button>
                 </div>
               </div>
             </div>
@@ -205,11 +205,11 @@
               <div class="color-picker-row">
                 <input type="color" id="viewerColorPicker" value="#ffffff" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="viewer-color-chip" data-color="#ffffff" style="background: #ffffff;" title="White"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#fef08a" style="background: #fef08a;" title="Light Gold"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="background: #e9d5ff;" title="Lavender"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="background: #a5f3fc;" title="Ice Cyan"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="background: #fbcfe8;" title="Pastel Pink"></button>
+                  <button type="button" class="viewer-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White" aria-label="White"></button>
+                  <button type="button" class="viewer-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;" title="Light Gold" aria-label="Light Gold"></button>
+                  <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;" title="Lavender" aria-label="Lavender"></button>
+                  <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;" title="Ice Cyan" aria-label="Ice Cyan"></button>
+                  <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;" title="Pastel Pink" aria-label="Pastel Pink"></button>
                 </div>
               </div>
             </div>
@@ -228,18 +228,18 @@
               </select>
             </div>
 
-            <!-- Custom Card Background Color & Opacity -->
+            <!-- Custom Card Background Color and Opacity -->
             <div class="form-group">
               <label>สีพื้นหลังการ์ด (Card Background)</label>
               <div class="color-picker-row">
                 <input type="color" id="cardBgColorPicker" value="#1c1030" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="card-bg-chip" data-color="#1c1030" style="background: #1c1030;" title="Dark Violet"></button>
-                  <button type="button" class="card-bg-chip" data-color="#0f172a" style="background: #0f172a;" title="Midnight Slate"></button>
-                  <button type="button" class="card-bg-chip" data-color="#18181b" style="background: #18181b;" title="Cyberpunk Black"></button>
-                  <button type="button" class="card-bg-chip" data-color="#022c22" style="background: #022c22;" title="Emerald Green"></button>
-                  <button type="button" class="card-bg-chip" data-color="#271406" style="background: #271406;" title="Sunset Amber"></button>
-                  <button type="button" class="card-bg-chip" data-color="#09090b" style="background: #09090b;" title="Pitch Dark"></button>
+                  <button type="button" class="card-bg-chip" data-color="#1c1030" style="--chip-color: #1c1030;" title="Dark Violet" aria-label="Dark Violet"></button>
+                  <button type="button" class="card-bg-chip" data-color="#0f172a" style="--chip-color: #0f172a;" title="Midnight Slate" aria-label="Midnight Slate"></button>
+                  <button type="button" class="card-bg-chip" data-color="#18181b" style="--chip-color: #18181b;" title="Cyberpunk Black" aria-label="Cyberpunk Black"></button>
+                  <button type="button" class="card-bg-chip" data-color="#022c22" style="--chip-color: #022c22;" title="Emerald Green" aria-label="Emerald Green"></button>
+                  <button type="button" class="card-bg-chip" data-color="#271406" style="--chip-color: #271406;" title="Sunset Amber" aria-label="Sunset Amber"></button>
+                  <button type="button" class="card-bg-chip" data-color="#09090b" style="--chip-color: #09090b;" title="Pitch Dark" aria-label="Pitch Dark"></button>
                 </div>
               </div>
             </div>
@@ -261,12 +261,12 @@
               <div class="color-picker-row">
                 <input type="color" id="cardBorderColorPicker" value="#c4b5fd" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="card-border-chip" data-color="#c4b5fd" style="background: #c4b5fd;" title="Violet"></button>
-                  <button type="button" class="card-border-chip" data-color="#38bdf8" style="background: #38bdf8;" title="Sky Cyan"></button>
-                  <button type="button" class="card-border-chip" data-color="#f43f5e" style="background: #f43f5e;" title="Rose Pink"></button>
-                  <button type="button" class="card-border-chip" data-color="#34d399" style="background: #34d399;" title="Emerald"></button>
-                  <button type="button" class="card-border-chip" data-color="#fbbf24" style="background: #fbbf24;" title="Gold"></button>
-                  <button type="button" class="card-border-chip" data-color="#ffffff" style="background: #ffffff;" title="White"></button>
+                  <button type="button" class="card-border-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;" title="Violet" aria-label="Violet"></button>
+                  <button type="button" class="card-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan" aria-label="Sky Cyan"></button>
+                  <button type="button" class="card-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Pink" aria-label="Rose Pink"></button>
+                  <button type="button" class="card-border-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald" aria-label="Emerald"></button>
+                  <button type="button" class="card-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold" aria-label="Gold"></button>
+                  <button type="button" class="card-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White" aria-label="White"></button>
                 </div>
               </div>
             </div>
@@ -277,12 +277,12 @@
               <div class="color-picker-row">
                 <input type="color" id="cardGlowColorPicker" value="#a855f7" class="color-picker">
                 <div class="color-presets">
-                  <button type="button" class="card-glow-chip" data-color="#a855f7" style="background: #a855f7;" title="Purple Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#38bdf8" style="background: #38bdf8;" title="Cyan Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#f43f5e" style="background: #f43f5e;" title="Rose Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#10b981" style="background: #10b981;" title="Green Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#f59e0b" style="background: #f59e0b;" title="Amber Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#64748b" style="background: #64748b;" title="Subtle Slate"></button>
+                  <button type="button" class="card-glow-chip" data-color="#a855f7" style="--chip-color: #a855f7;" title="Purple Glow" aria-label="Purple Glow"></button>
+                  <button type="button" class="card-glow-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Cyan Glow" aria-label="Cyan Glow"></button>
+                  <button type="button" class="card-glow-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Glow" aria-label="Rose Glow"></button>
+                  <button type="button" class="card-glow-chip" data-color="#10b981" style="--chip-color: #10b981;" title="Green Glow" aria-label="Green Glow"></button>
+                  <button type="button" class="card-glow-chip" data-color="#f59e0b" style="--chip-color: #f59e0b;" title="Amber Glow" aria-label="Amber Glow"></button>
+                  <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;" title="Subtle Slate" aria-label="Subtle Slate"></button>
                 </div>
               </div>
             </div>
@@ -333,7 +333,7 @@
                 <button type="button" id="fetchTwitchRewardsBtn" class="btn btn-sm btn-secondary">🔄 โหลดแต้มจาก Twitch</button>
               </div>
               <div id="twitchRewardsList" class="twitch-rewards-list">
-                <span style="color: var(--text-subtle); font-size: 0.85rem;">คลิก "โหลดแต้มจาก Twitch" เพื่อเลือกแต้มในช่องของคุณ</span>
+                <span class="hint-text">คลิก "โหลดแต้มจาก Twitch" เพื่อเลือกแต้มในช่องของคุณ</span>
               </div>
             </div>
           </div>
@@ -346,7 +346,7 @@
         </form>
       </section>
 
-      <!-- 3. Live Preview & Testing Stage -->
+      <!-- 3. Live Preview and Testing Stage -->
       <section class="card preview-card">
         <div class="card-header-row">
           <div>
@@ -354,7 +354,7 @@
             <p class="card-desc">ตัวอย่างการแสดงผลบน OBS ตามการตั้งค่าปัจจุบันของคุณ</p>
           </div>
           <div class="preview-actions">
-            <button id="resetOverlayBtn" class="btn btn-danger btn-sm">Reset Overlay</button>
+            <button type="button" id="resetOverlayBtn" class="btn btn-danger btn-sm">Reset Overlay</button>
           </div>
         </div>
 
@@ -373,7 +373,7 @@
         </div>
 
         <div class="test-controls-row">
-          <button id="sendTestRedeemBtn" class="btn btn-secondary">
+          <button type="button" id="sendTestRedeemBtn" class="btn btn-secondary">
             ▶️ ส่งทดสอบแต้ม (Test Redemption)
           </button>
         </div>

@@ -134,14 +134,14 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(redeem1.isFirst, true);
     assert.strictEqual(redeem1.order, 1);
 
-    // 2nd redemption replaces 1st, marked not first
+    // 2nd redemption replaces 1st, always treated as 1st redeemer badge for the reward
     const redeem2 = sessionRepo.setLatestRedemption(user1.id, {
       id: 'r_02',
       userName: 'viewer2',
       displayName: 'Viewer Two',
       rewardTitle: 'แต้มพิเศษประจำวัน',
     });
-    assert.strictEqual(redeem2.isFirst, false);
+    assert.strictEqual(redeem2.isFirst, true);
     assert.strictEqual(redeem2.order, 2);
 
     const currentSession = sessionRepo.getSession(user1.id);
@@ -154,6 +154,7 @@ async function runAsyncTest(description, fn) {
     const afterReset = sessionRepo.getSession(user1.id);
     assert.strictEqual(afterReset.isStreaming, true, 'Stream remains active');
     assert.strictEqual(afterReset.latestRedemption, null, 'Display is cleared');
+    assert.strictEqual(afterReset.redemptionCount, 0, 'Redemption count is reset to 0');
 
     sessionRepo.endStream(user1.id);
     const afterEnd = sessionRepo.getSession(user1.id);
@@ -285,6 +286,27 @@ async function runAsyncTest(description, fn) {
     broadcaster.destroy();
     await new Promise((r) => testServer.close(r));
     await new Promise((r) => setTimeout(r, 100));
+  });
+
+  // Test 9: Preserve 1st redemption when stream.online arrives slightly delayed
+  runTest('Preserve 1st redemption when stream starts shortly after viewer redeemed', () => {
+    sessionRepo.resetOverlay(user2.id);
+    const earlyRedeem = sessionRepo.setLatestRedemption(user2.id, {
+      id: 'early_01',
+      userName: 'speedy_viewer',
+      displayName: 'SpeedyViewer',
+      rewardTitle: 'รักแรกมันแยกยาก',
+      redeemedAt: new Date().toISOString(),
+    });
+    assert.strictEqual(earlyRedeem.isFirst, true);
+
+    // Twitch delivers stream.online 1 minute later
+    sessionRepo.startStream(user2.id);
+    const sessionAfterStart = sessionRepo.getSession(user2.id);
+    assert.strictEqual(sessionAfterStart.isStreaming, true);
+    assert.ok(sessionAfterStart.latestRedemption, 'Recent redemption should not be wiped');
+    assert.strictEqual(sessionAfterStart.latestRedemption.id, 'early_01');
+    assert.strictEqual(sessionAfterStart.latestRedemption.isFirst, true);
   });
 
   console.log('\n====================================================');

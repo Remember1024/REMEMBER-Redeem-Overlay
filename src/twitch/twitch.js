@@ -21,17 +21,6 @@ export class TwitchMultiUserManager extends EventEmitter {
   }
 
   setupListeners() {
-    twitchEventSub.on('ready', async () => {
-      this.ready = true;
-      this.addLog('EventSub is ready. Subscribing all registered users...');
-      await this.subscribeAllUsers();
-    });
-
-    twitchEventSub.on('disconnected', () => {
-      this.ready = false;
-      this.addLog('EventSub disconnected.');
-    });
-
     // Handle incoming Channel Points Redemption
     twitchEventSub.on('redemption', ({ broadcasterId, redemption }) => {
       const user = userRepo.findUserById(broadcasterId);
@@ -74,9 +63,17 @@ export class TwitchMultiUserManager extends EventEmitter {
       const user = userRepo.findUserById(broadcasterId);
       if (!user) return;
 
-      this.addLog(`@${user.login} started streaming. Resetting session.`);
+      const current = sessionRepo.getSession(broadcasterId);
+      const recentRedeemAgeMs = current.latestRedemption
+        ? Date.now() - new Date(current.latestRedemption.redeemedAt || current.updatedAt).getTime()
+        : Infinity;
+      const hasRecentRedemption = current.latestRedemption && recentRedeemAgeMs < 10 * 60 * 1000;
+
+      this.addLog(`@${user.login} started streaming.${hasRecentRedemption ? ' Preserving recent 1st redemption.' : ' Resetting session.'}`);
       const session = sessionRepo.startStream(broadcasterId);
-      broadcaster.broadcastClear(broadcasterId, 'stream_started');
+      if (!hasRecentRedemption) {
+        broadcaster.broadcastClear(broadcasterId, 'stream_started');
+      }
       broadcaster.broadcastSessionState(broadcasterId, session);
     });
 
@@ -97,7 +94,9 @@ export class TwitchMultiUserManager extends EventEmitter {
       console.warn('[Twitch Multi-User] Twitch Client ID or Secret missing in .env');
       return;
     }
-    twitchEventSub.connect();
+    this.ready = true;
+    this.addLog('Subscribing all registered users to Twitch EventSub...');
+    await this.subscribeAllUsers();
   }
 
   async subscribeAllUsers() {

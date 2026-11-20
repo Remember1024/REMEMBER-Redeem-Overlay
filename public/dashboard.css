@@ -143,6 +143,12 @@ body {
   margin-bottom: 16px;
 }
 
+.whitelist-notice {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--accent-lavender);
+}
+
 .card-header-row {
   display: flex;
   justify-content: space-between;

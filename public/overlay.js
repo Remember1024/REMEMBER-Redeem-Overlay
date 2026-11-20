@@ -7,6 +7,15 @@
 
   let ws = null;
   let reconnectTimer = null;
+  let heartbeatTimer = null;
+  let pollingTimer = null;
+  let lastMessageTime = Date.now();
+  let currentRedemptionId = null;
+
+  const PING_INTERVAL_MS = 15000; // Send PING every 15s to keep Cloud Run / reverse proxies alive
+  const WATCHDOG_TIMEOUT_MS = 35000; // Reconnect if no message/pong received in 35s
+  const FALLBACK_POLL_INTERVAL_MS = 6000; // Background HTTP fallback sync every 6s
+
   let currentUser = {
     badgeText: '👑 1ST REDEEMER',
     badgeColor: '#fbbf24',
@@ -71,6 +80,57 @@
     } catch {}
   }
 
+  function startHeartbeat() {
+    stopHeartbeat();
+    heartbeatTimer = setInterval(() => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        try {
+          ws.send(JSON.stringify({ type: 'PING' }));
+        } catch {}
+      }
+      // Watchdog: If no message or pong received within WATCHDOG_TIMEOUT_MS, reconnect
+      if (Date.now() - lastMessageTime > WATCHDOG_TIMEOUT_MS) {
+        console.warn('[Overlay] WebSocket connection appears stale. Reconnecting...');
+        try { ws.close(); } catch {}
+      }
+    }, PING_INTERVAL_MS);
+  }
+
+  function stopHeartbeat() {
+    if (heartbeatTimer) {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
+  }
+
+  function startPollingSync() {
+    if (pollingTimer) clearInterval(pollingTimer);
+    pollingTimer = setInterval(fetchOverlayData, FALLBACK_POLL_INTERVAL_MS);
+  }
+
+  async function fetchOverlayData() {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/overlay-data?token=${encodeURIComponent(token)}`);
+      if (!res.ok) return;
+      const payload = await res.json();
+
+      if (payload.user) {
+        currentUser = { ...currentUser, ...payload.user };
+        applyCustomStyles();
+      }
+
+      if (payload.session?.latestRedemption) {
+        const latest = payload.session.latestRedemption;
+        if (latest.id !== currentRedemptionId) {
+          displayRedemption(latest, true);
+        }
+      } else if (currentRedemptionId !== null) {
+        hideRedemption();
+      }
+    } catch {}
+  }
+
   function connectWebSocket() {
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
@@ -85,9 +145,21 @@
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
 
-    ws = new WebSocket(wsUrl);
+    try {
+      ws = new WebSocket(wsUrl);
+    } catch (err) {
+      console.error('[Overlay] WebSocket create error:', err);
+      reconnectTimer = setTimeout(connectWebSocket, 2500);
+      return;
+    }
+
+    ws.onopen = () => {
+      lastMessageTime = Date.now();
+      startHeartbeat();
+    };
 
     ws.onmessage = (event) => {
+      lastMessageTime = Date.now();
       try {
         const payload = JSON.parse(event.data);
         handleServerMessage(payload);
@@ -97,8 +169,9 @@
     };
 
     ws.onclose = (event) => {
+      stopHeartbeat();
       if (event.code !== 4001) {
-        // Reconnect unless unauthorized
+        // Reconnect unless explicitly unauthorized
         reconnectTimer = setTimeout(connectWebSocket, 2500);
       }
     };
@@ -112,6 +185,11 @@
     const { type, data } = message;
 
     switch (type) {
+      case 'PONG':
+        // Heartbeat acknowledged
+        lastMessageTime = Date.now();
+        break;
+
       case 'INIT':
         if (data?.user) {
           currentUser = { ...currentUser, ...data.user };
@@ -193,6 +271,7 @@
   function displayRedemption(redemption, animatePulse = true) {
     if (!redemption) return;
 
+    currentRedemptionId = redemption.id || `${redemption.userName}_${redemption.redeemedAt}`;
     const displayName = redemption.displayName || redemption.userName || 'Viewer';
     const rewardTitle = redemption.rewardTitle || 'Reward';
 
@@ -208,17 +287,10 @@
     }
 
     if (indicatorLabelEl && liveIndicatorEl) {
-      if (redemption.isFirst) {
-        indicatorLabelEl.textContent = currentUser.badgeText || '👑 1ST REDEEMER';
-        indicatorLabelEl.style.color = currentUser.badgeColor || '#fbbf24';
-        liveIndicatorEl.style.borderColor = currentUser.badgeColor || '#fbbf24';
-        liveIndicatorEl.classList.add('first-redeemer');
-      } else {
-        indicatorLabelEl.textContent = 'LATEST';
-        indicatorLabelEl.style.color = '';
-        liveIndicatorEl.style.borderColor = '';
-        liveIndicatorEl.classList.remove('first-redeemer');
-      }
+      indicatorLabelEl.textContent = currentUser.badgeText || '👑 1ST REDEEMER';
+      indicatorLabelEl.style.color = currentUser.badgeColor || '#fbbf24';
+      liveIndicatorEl.style.borderColor = currentUser.badgeColor || '#fbbf24';
+      liveIndicatorEl.classList.add('first-redeemer');
     }
 
     cardElement.classList.remove('hidden');
@@ -231,8 +303,16 @@
   }
 
   function hideRedemption() {
+    currentRedemptionId = null;
     cardElement.classList.add('hidden');
   }
 
+  // Initial immediate fetch for instant loading on OBS
+  fetchOverlayData();
+
+  // Connect WebSocket for real-time events
   connectWebSocket();
+
+  // Start background fallback sync
+  startPollingSync();
 })();

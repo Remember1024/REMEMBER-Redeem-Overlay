@@ -157,7 +157,7 @@
   function renderTags() {
     whitelistTagsContainer.innerHTML = '';
     if (currentWhitelist.length === 0) {
-      whitelistTagsContainer.innerHTML = '<span style="color: var(--text-subtle); font-size: 0.85rem;">ยังไม่มีรายการแต้ม (อนุญาตให้แสดงทุกแต้ม)</span>';
+      whitelistTagsContainer.innerHTML = '<span class="hint-text">ยังไม่มีรายการแต้ม (อนุญาตให้แสดงทุกแต้ม)</span>';
       return;
     }
 
@@ -171,6 +171,7 @@
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'tag-remove-btn';
+      removeBtn.setAttribute('aria-label', `ลบแต้ม ${word}`);
       removeBtn.innerHTML = '&times;';
       removeBtn.addEventListener('click', () => {
         currentWhitelist.splice(index, 1);
@@ -493,31 +494,31 @@
 
   async function fetchTwitchRewards() {
     if (!twitchRewardsList) return;
-    twitchRewardsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">กำลังโหลดแต้มจาก Twitch...</span>';
+    twitchRewardsList.innerHTML = '<span class="hint-text-muted">กำลังโหลดแต้มจาก Twitch...</span>';
 
     try {
       const res = await fetch('/api/twitch/custom-rewards');
       const data = await res.json();
 
       if (!data.success) {
-        twitchRewardsList.innerHTML = `<span style="color: #f87171; font-size: 0.85rem;">โหลดแต้มไม่สำเร็จ: ${data.error || 'Unknown error'}</span>`;
+        twitchRewardsList.innerHTML = `<span class="hint-text-error">โหลดแต้มไม่สำเร็จ: ${data.error || 'Unknown error'}</span>`;
         return;
       }
 
       if (!data.isAffiliate) {
-        twitchRewardsList.innerHTML = `<span style="color: var(--text-subtle); font-size: 0.85rem;">${data.message || 'ช่องนี้ยังไม่ได้เปิดระบบ Channel Points'}</span>`;
+        twitchRewardsList.innerHTML = `<span class="hint-text">${data.message || 'ช่องนี้ยังไม่ได้เปิดระบบ Channel Points'}</span>`;
         return;
       }
 
       cachedTwitchRewards = data.rewards || [];
       if (cachedTwitchRewards.length === 0) {
-        twitchRewardsList.innerHTML = '<span style="color: var(--text-subtle); font-size: 0.85rem;">ไม่พบรายการแต้มในช่องของคุณ</span>';
+        twitchRewardsList.innerHTML = '<span class="hint-text">ไม่พบรายการแต้มในช่องของคุณ</span>';
         return;
       }
 
       renderTwitchRewardsList();
     } catch (err) {
-      twitchRewardsList.innerHTML = `<span style="color: #f87171; font-size: 0.85rem;">Error: ${err.message}</span>`;
+      twitchRewardsList.innerHTML = `<span class="hint-text-error">Error: ${err.message}</span>`;
     }
   }
 

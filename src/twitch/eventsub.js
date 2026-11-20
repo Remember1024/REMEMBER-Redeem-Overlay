@@ -2,9 +2,10 @@ import WebSocket from 'ws';
 import { EventEmitter } from 'events';
 import { config } from '../config.js';
 
-export class TwitchEventSub extends EventEmitter {
-  constructor() {
-    super();
+export class UserEventSubConnection {
+  constructor(user, parent) {
+    this.user = user;
+    this.parent = parent;
     this.ws = null;
     this.sessionId = null;
     this.keepaliveTimer = null;
@@ -15,24 +16,26 @@ export class TwitchEventSub extends EventEmitter {
     this.isExplicitlyClosed = false;
     this.seenMessageIds = new Set();
     this.maxSeenMessages = 500;
-    this.userSubscriptions = new Map(); // broadcasterId -> Array of { type, status, error, timestamp }
-    this.subscriptionQueue = new Set(); // Set of user objects waiting for sessionId
+  }
+
+  updateUser(user) {
+    this.user = user;
   }
 
   connect(url = config.twitch.eventsubWsUrl) {
     this.clearKeepaliveTimer();
-    console.log(`[Twitch EventSub] Connecting to ${url}...`);
+    console.log(`[Twitch EventSub @${this.user.login}] Connecting to ${url}...`);
 
     try {
       this.ws = new WebSocket(url);
     } catch (err) {
-      console.error('[Twitch EventSub] Failed to initialize WebSocket:', err.message);
+      console.error(`[Twitch EventSub @${this.user.login}] WebSocket init failed:`, err.message);
       this.scheduleReconnect();
       return;
     }
 
     this.ws.on('open', () => {
-      console.log('[Twitch EventSub] WebSocket connected. Waiting for session_welcome...');
+      console.log(`[Twitch EventSub @${this.user.login}] WebSocket connected. Waiting for session_welcome...`);
       this.reconnectAttempts = 0;
     });
 
@@ -41,10 +44,9 @@ export class TwitchEventSub extends EventEmitter {
     });
 
     this.ws.on('close', (code, reason) => {
-      console.log(`[Twitch EventSub] WebSocket closed: ${code} - ${reason?.toString() || 'none'}`);
+      console.log(`[Twitch EventSub @${this.user.login}] WebSocket closed: ${code} - ${reason?.toString() || 'none'}`);
       this.clearKeepaliveTimer();
       this.sessionId = null;
-      this.emit('disconnected');
 
       if (!this.isExplicitlyClosed) {
         this.scheduleReconnect();
@@ -52,7 +54,7 @@ export class TwitchEventSub extends EventEmitter {
     });
 
     this.ws.on('error', (err) => {
-      console.error('[Twitch EventSub] WebSocket error:', err.message);
+      console.error(`[Twitch EventSub @${this.user.login}] WebSocket error:`, err.message);
     });
   }
 
@@ -84,17 +86,8 @@ export class TwitchEventSub extends EventEmitter {
         this.sessionId = payload.session.id;
         this.keepaliveTimeoutSec = payload.session.keepalive_timeout_seconds || 10;
         this.resetKeepalive();
-        console.log(`[Twitch EventSub] Ready! Session ID: ${this.sessionId}`);
-        this.emit('ready', { sessionId: this.sessionId });
-
-        // Process any queued users
-        if (this.subscriptionQueue.size > 0) {
-          const queued = Array.from(this.subscriptionQueue);
-          this.subscriptionQueue.clear();
-          for (const u of queued) {
-            this.subscribeUser(u);
-          }
-        }
+        console.log(`[Twitch EventSub @${this.user.login}] Ready! Session ID: ${this.sessionId}`);
+        this.registerSubscriptions();
         break;
 
       case 'session_keepalive':
@@ -109,35 +102,29 @@ export class TwitchEventSub extends EventEmitter {
         break;
 
       case 'revocation':
-        console.warn('[Twitch EventSub] Subscription revoked:', payload.subscription?.type);
+        console.warn(`[Twitch EventSub @${this.user.login}] Subscription revoked:`, payload.subscription?.type);
         break;
     }
   }
 
-  async subscribeUser(user) {
-    if (!user || !user.access_token) return;
-
-    if (!this.sessionId) {
-      console.warn(`[Twitch EventSub] Cannot subscribe @${user.login} yet: WebSocket not ready (sessionId is null). Queuing...`);
-      this.subscriptionQueue.add(user);
-      return;
-    }
+  async registerSubscriptions() {
+    if (!this.sessionId || !this.user.access_token) return;
 
     const subscriptions = [
       {
         type: 'channel.channel_points_custom_reward_redemption.add',
         version: '1',
-        condition: { broadcaster_user_id: user.id },
+        condition: { broadcaster_user_id: this.user.id },
       },
       {
         type: 'stream.online',
         version: '1',
-        condition: { broadcaster_user_id: user.id },
+        condition: { broadcaster_user_id: this.user.id },
       },
       {
         type: 'stream.offline',
         version: '1',
-        condition: { broadcaster_user_id: user.id },
+        condition: { broadcaster_user_id: this.user.id },
       },
     ];
 
@@ -148,7 +135,7 @@ export class TwitchEventSub extends EventEmitter {
           method: 'POST',
           headers: {
             'Client-Id': config.twitch.clientId,
-            Authorization: `Bearer ${user.access_token}`,
+            Authorization: `Bearer ${this.user.access_token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -161,22 +148,22 @@ export class TwitchEventSub extends EventEmitter {
         });
 
         if (res.status === 202 || res.status === 200) {
-          console.log(`[Twitch EventSub] Successfully subscribed to ${sub.type} for @${user.login}`);
+          console.log(`[Twitch EventSub @${this.user.login}] Successfully subscribed to ${sub.type}`);
           results.push({ type: sub.type, success: true, status: res.status });
         } else if (res.status === 409) {
-          console.log(`[Twitch EventSub] Already subscribed to ${sub.type} for @${user.login}`);
+          console.log(`[Twitch EventSub @${this.user.login}] Already subscribed to ${sub.type}`);
           results.push({ type: sub.type, success: true, status: 409, note: 'already_subscribed' });
         } else {
           const errBody = await res.text();
-          console.warn(`[Twitch EventSub] Subscription error ${sub.type} for @${user.login} (HTTP ${res.status}):`, errBody);
+          console.warn(`[Twitch EventSub @${this.user.login}] Subscription error ${sub.type} (HTTP ${res.status}):`, errBody);
           results.push({ type: sub.type, success: false, status: res.status, error: errBody });
         }
       } catch (err) {
-        console.error(`[Twitch EventSub] Failed to subscribe to ${sub.type} for @${user.login}:`, err.message);
+        console.error(`[Twitch EventSub @${this.user.login}] Failed to subscribe to ${sub.type}:`, err.message);
         results.push({ type: sub.type, success: false, error: err.message });
       }
     }
-    this.userSubscriptions.set(user.id, results);
+    this.parent.userSubscriptions.set(this.user.id, results);
   }
 
   handleNotification(metadata, payload) {
@@ -184,7 +171,7 @@ export class TwitchEventSub extends EventEmitter {
     const event = payload.event;
     if (!event) return;
 
-    const broadcasterId = event.broadcaster_user_id;
+    const broadcasterId = event.broadcaster_user_id || this.user.id;
 
     if (subType === 'channel.channel_points_custom_reward_redemption.add') {
       const redemption = {
@@ -198,18 +185,18 @@ export class TwitchEventSub extends EventEmitter {
         userInput: event.user_input || '',
         redeemedAt: event.redeemed_at || new Date().toISOString(),
       };
-      this.emit('redemption', { broadcasterId, redemption });
+      this.parent.emit('redemption', { broadcasterId, redemption });
     } else if (subType === 'stream.online') {
-      console.log(`[Twitch EventSub] Stream ONLINE for broadcaster ${broadcasterId}`);
-      this.emit('stream_online', { broadcasterId, startedAt: event.started_at });
+      console.log(`[Twitch EventSub @${this.user.login}] Stream ONLINE for broadcaster ${broadcasterId}`);
+      this.parent.emit('stream_online', { broadcasterId, startedAt: event.started_at });
     } else if (subType === 'stream.offline') {
-      console.log(`[Twitch EventSub] Stream OFFLINE for broadcaster ${broadcasterId}`);
-      this.emit('stream_offline', { broadcasterId });
+      console.log(`[Twitch EventSub @${this.user.login}] Stream OFFLINE for broadcaster ${broadcasterId}`);
+      this.parent.emit('stream_offline', { broadcasterId });
     }
   }
 
   handleReconnect(reconnectUrl) {
-    console.log(`[Twitch EventSub] Reconnecting via ${reconnectUrl}`);
+    console.log(`[Twitch EventSub @${this.user.login}] Reconnecting via ${reconnectUrl}`);
     const oldWs = this.ws;
     try {
       const newWs = new WebSocket(reconnectUrl);
@@ -233,7 +220,7 @@ export class TwitchEventSub extends EventEmitter {
     this.clearKeepaliveTimer();
     const timeoutMs = (this.keepaliveTimeoutSec + 4) * 1000;
     this.keepaliveTimer = setTimeout(() => {
-      console.warn('[Twitch EventSub] Keepalive timeout. Reconnecting...');
+      console.warn(`[Twitch EventSub @${this.user.login}] Keepalive timeout. Reconnecting...`);
       try { this.ws?.terminate(); } catch {}
       this.scheduleReconnect();
     }, timeoutMs);
@@ -256,11 +243,53 @@ export class TwitchEventSub extends EventEmitter {
     }, delay);
   }
 
-  stop() {
+  close() {
     this.isExplicitlyClosed = true;
     this.clearKeepaliveTimer();
     if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
     try { this.ws?.close(); } catch {}
+  }
+}
+
+export class TwitchEventSub extends EventEmitter {
+  constructor() {
+    super();
+    this.userConnections = new Map(); // userId -> UserEventSubConnection
+    this.userSubscriptions = new Map(); // userId -> Array of subscription status objects
+  }
+
+  async subscribeUser(user) {
+    if (!user || !user.access_token) return;
+
+    let conn = this.userConnections.get(user.id);
+    if (!conn) {
+      conn = new UserEventSubConnection(user, this);
+      this.userConnections.set(user.id, conn);
+      conn.connect();
+    } else {
+      conn.updateUser(user);
+      if (!conn.ws || conn.ws.readyState !== WebSocket.OPEN) {
+        conn.connect();
+      } else {
+        await conn.registerSubscriptions();
+      }
+    }
+  }
+
+  unsubscribeUser(userId) {
+    const conn = this.userConnections.get(userId);
+    if (conn) {
+      conn.close();
+      this.userConnections.delete(userId);
+      this.userSubscriptions.delete(userId);
+    }
+  }
+
+  stop() {
+    for (const conn of this.userConnections.values()) {
+      conn.close();
+    }
+    this.userConnections.clear();
   }
 }
 

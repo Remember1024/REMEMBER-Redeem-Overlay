@@ -17,7 +17,7 @@ if (fs.existsSync(envFile)) {
   dotenv.config({ path: envExampleFile });
 }
 
-const dataDir = path.join(rootDir, 'data');
+const dataDir = process.env.DATA_DIR || path.join(rootDir, 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -28,7 +28,7 @@ export const config = {
   twitch: {
     clientId: process.env.TWITCH_CLIENT_ID?.trim() || '',
     clientSecret: process.env.TWITCH_CLIENT_SECRET?.trim() || '',
-    redirectUri: process.env.TWITCH_REDIRECT_URI?.trim() || 'http://localhost:3000/auth/twitch/callback',
+    redirectUri: process.env.TWITCH_REDIRECT_URI?.trim() || '',
     eventsubWsUrl: 'wss://eventsub.wss.twitch.tv/ws',
   },
   obs: {

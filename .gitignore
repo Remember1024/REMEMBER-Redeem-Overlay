@@ -8,9 +8,11 @@ node_modules/
 data/*.db
 data/*.db-journal
 data/*.db-wal
+data/*.db-shm
 data/*.json
 data/*.tmp
 !data/.gitkeep
+.scratch/
 
 # OS & Logs
 npm-debug.log*
