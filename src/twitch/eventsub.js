@@ -1,6 +1,8 @@
 import WebSocket from 'ws';
+import crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { config } from '../config.js';
+import { twitchOAuth } from './oauth.js';
 
 export class UserEventSubConnection {
   constructor(user, parent) {
@@ -167,32 +169,7 @@ export class UserEventSubConnection {
   }
 
   handleNotification(metadata, payload) {
-    const subType = metadata.subscription_type;
-    const event = payload.event;
-    if (!event) return;
-
-    const broadcasterId = event.broadcaster_user_id || this.user.id;
-
-    if (subType === 'channel.channel_points_custom_reward_redemption.add') {
-      const redemption = {
-        id: event.id,
-        rewardId: event.reward?.id,
-        rewardTitle: event.reward?.title || 'Reward',
-        rewardCost: event.reward?.cost || 0,
-        userId: event.user_id,
-        userName: event.user_login,
-        displayName: event.user_name || event.user_login,
-        userInput: event.user_input || '',
-        redeemedAt: event.redeemed_at || new Date().toISOString(),
-      };
-      this.parent.emit('redemption', { broadcasterId, redemption });
-    } else if (subType === 'stream.online') {
-      console.log(`[Twitch EventSub @${this.user.login}] Stream ONLINE for broadcaster ${broadcasterId}`);
-      this.parent.emit('stream_online', { broadcasterId, startedAt: event.started_at });
-    } else if (subType === 'stream.offline') {
-      console.log(`[Twitch EventSub @${this.user.login}] Stream OFFLINE for broadcaster ${broadcasterId}`);
-      this.parent.emit('stream_offline', { broadcasterId });
-    }
+    this.parent.handleNotification(metadata, payload);
   }
 
   handleReconnect(reconnectUrl) {
@@ -256,6 +233,154 @@ export class TwitchEventSub extends EventEmitter {
     super();
     this.userConnections = new Map(); // userId -> UserEventSubConnection
     this.userSubscriptions = new Map(); // userId -> Array of subscription status objects
+  }
+
+  handleNotification(metadata, payload) {
+    const subType = metadata?.subscription_type || metadata?.type;
+    const event = payload?.event;
+    if (!event) return;
+
+    const broadcasterId = event.broadcaster_user_id;
+
+    if (subType === 'channel.channel_points_custom_reward_redemption.add') {
+      const redemption = {
+        id: event.id,
+        rewardId: event.reward?.id,
+        rewardTitle: event.reward?.title || 'Reward',
+        rewardCost: event.reward?.cost || 0,
+        userId: event.user_id,
+        userName: event.user_login,
+        displayName: event.user_name || event.user_login,
+        userInput: event.user_input || '',
+        redeemedAt: event.redeemed_at || new Date().toISOString(),
+      };
+      this.emit('redemption', { broadcasterId, redemption });
+    } else if (subType === 'stream.online') {
+      console.log(`[Twitch EventSub] Stream ONLINE for broadcaster ${broadcasterId}`);
+      this.emit('stream_online', { broadcasterId, startedAt: event.started_at });
+    } else if (subType === 'stream.offline') {
+      console.log(`[Twitch EventSub] Stream OFFLINE for broadcaster ${broadcasterId}`);
+      this.emit('stream_offline', { broadcasterId });
+    }
+  }
+
+  handleWebhook(req, res) {
+    const messageId = req.headers['twitch-eventsub-message-id'];
+    const messageTimestamp = req.headers['twitch-eventsub-message-timestamp'];
+    const messageSignature = req.headers['twitch-eventsub-message-signature'];
+    const messageType = req.headers['twitch-eventsub-message-type'];
+
+    if (!messageId || !messageTimestamp || !messageSignature || !messageType) {
+      return res.status(400).send('Bad Request: Missing Twitch EventSub headers');
+    }
+
+    // Verify timestamp to prevent replay attacks (< 10 minutes)
+    const current = Math.floor(Date.now() / 1000);
+    const messageTime = Math.floor(new Date(messageTimestamp).getTime() / 1000);
+    if (isNaN(messageTime) || Math.abs(current - messageTime) > 600) {
+      return res.status(403).send('Forbidden: Message timestamp too old or invalid');
+    }
+
+    // Verify HMAC-SHA256 signature
+    const secret = config.twitch.webhookSecret;
+    const rawBody = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(req.body);
+    const message = messageId + messageTimestamp + rawBody;
+    const expectedSignature = 'sha256=' + crypto.createHmac('sha256', secret).update(message).digest('hex');
+
+    try {
+      const sigBuf = Buffer.from(messageSignature);
+      const expBuf = Buffer.from(expectedSignature);
+      if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+        console.warn('[Twitch EventSub Webhook] Invalid signature received');
+        return res.status(403).send('Forbidden: Invalid signature');
+      }
+    } catch (err) {
+      console.warn('[Twitch EventSub Webhook] Error comparing signatures:', err.message);
+      return res.status(403).send('Forbidden: Signature verification error');
+    }
+
+    // Process message type
+    if (messageType === 'webhook_callback_verification') {
+      console.log('[Twitch EventSub Webhook] Callback URL verified successfully by Twitch!');
+      return res.status(200).send(req.body.challenge);
+    }
+
+    if (messageType === 'notification') {
+      this.handleNotification(req.body.subscription, req.body);
+      return res.status(204).end();
+    }
+
+    if (messageType === 'revocation') {
+      console.warn('[Twitch EventSub Webhook] Subscription revoked:', req.body.subscription?.type);
+      return res.status(204).end();
+    }
+
+    return res.status(200).end();
+  }
+
+  async subscribeUserWebhook(user, callbackUrl) {
+    if (!user || !user.id || !callbackUrl) return;
+
+    try {
+      const appToken = await twitchOAuth.getAppAccessToken();
+      const subscriptions = [
+        {
+          type: 'channel.channel_points_custom_reward_redemption.add',
+          version: '1',
+          condition: { broadcaster_user_id: user.id },
+        },
+        {
+          type: 'stream.online',
+          version: '1',
+          condition: { broadcaster_user_id: user.id },
+        },
+        {
+          type: 'stream.offline',
+          version: '1',
+          condition: { broadcaster_user_id: user.id },
+        },
+      ];
+
+      const results = [];
+      for (const sub of subscriptions) {
+        try {
+          const res = await fetch('https://api.twitch.tv/helix/eventsub/subscriptions', {
+            method: 'POST',
+            headers: {
+              'Client-Id': config.twitch.clientId,
+              Authorization: `Bearer ${appToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...sub,
+              transport: {
+                method: 'webhook',
+                callback: callbackUrl,
+                secret: config.twitch.webhookSecret,
+              },
+            }),
+          });
+
+          if (res.status === 202 || res.status === 200) {
+            console.log(`[Twitch Webhook @${user.login}] Subscribed to ${sub.type} (Callback: ${callbackUrl})`);
+            results.push({ type: sub.type, success: true, status: res.status, transport: 'webhook' });
+          } else if (res.status === 409) {
+            console.log(`[Twitch Webhook @${user.login}] Already subscribed to ${sub.type}`);
+            results.push({ type: sub.type, success: true, status: 409, note: 'already_subscribed', transport: 'webhook' });
+          } else {
+            const errBody = await res.text();
+            console.warn(`[Twitch Webhook @${user.login}] Subscription error ${sub.type} (HTTP ${res.status}):`, errBody);
+            results.push({ type: sub.type, success: false, status: res.status, error: errBody, transport: 'webhook' });
+          }
+        } catch (err) {
+          console.error(`[Twitch Webhook @${user.login}] Fetch failed for ${sub.type}:`, err.message);
+          results.push({ type: sub.type, success: false, error: err.message, transport: 'webhook' });
+        }
+      }
+      this.userSubscriptions.set(user.id, results);
+    } catch (err) {
+      console.error(`[Twitch Webhook @${user.login}] Could not subscribe webhook:`, err.message);
+    }
   }
 
   async subscribeUser(user) {

@@ -41,8 +41,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware
-app.use(express.json());
+// Middleware (capture raw body for Twitch Webhook HMAC signature verification)
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Auth middleware
@@ -114,6 +118,8 @@ app.get('/api/debug-status', optionalAuth, (req, res) => {
     status: 'ok',
     serverTime: new Date().toISOString(),
     eventSub: {
+      mode: config.twitch.webhookCallbackUrl ? 'webhook' : 'websocket',
+      webhookCallbackUrl: config.twitch.webhookCallbackUrl || null,
       activeConnections: twitchEventSub.userConnections ? twitchEventSub.userConnections.size : 0,
       connectedUsers: Array.from(twitchEventSub.userConnections?.keys() || []),
     },
@@ -121,6 +127,11 @@ app.get('/api/debug-status', optionalAuth, (req, res) => {
     users,
     recentLogs: twitchManager.recentLogs || [],
   });
+});
+
+// Twitch EventSub Webhook Callback (Twitch triggers this when rewards are redeemed)
+app.post('/api/eventsub/callback', (req, res) => {
+  twitchEventSub.handleWebhook(req, res);
 });
 
 // Overlay page

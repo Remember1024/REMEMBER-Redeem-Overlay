@@ -321,6 +321,106 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(sessionAfterStart.latestRedemption.isFirst, true);
   });
 
+  // Test 10: Twitch EventSub Webhook Challenge & Notification HMAC
+  await runAsyncTest('Twitch EventSub Webhook verifies challenge and processes signed notification', async () => {
+    const crypto = await import('crypto');
+    const { twitchEventSub } = await import('../src/twitch/eventsub.js');
+    const { config } = await import('../src/config.js');
+
+    const secret = config.twitch.webhookSecret;
+    const testChallenge = 'challenge_test_string_xyz123';
+    const messageId = 'msg_' + Date.now();
+    const timestamp = new Date().toISOString();
+
+    // 1. Challenge verification
+    const challengeBody = JSON.stringify({ challenge: testChallenge });
+    const challengeHmac = 'sha256=' + crypto.createHmac('sha256', secret).update(messageId + timestamp + challengeBody).digest('hex');
+
+    let challengeResult = null;
+    let challengeStatus = null;
+    const mockChallengeReq = {
+      headers: {
+        'twitch-eventsub-message-id': messageId,
+        'twitch-eventsub-message-timestamp': timestamp,
+        'twitch-eventsub-message-signature': challengeHmac,
+        'twitch-eventsub-message-type': 'webhook_callback_verification',
+      },
+      body: { challenge: testChallenge },
+      rawBody: Buffer.from(challengeBody),
+    };
+    const mockChallengeRes = {
+      status(s) { challengeStatus = s; return this; },
+      send(data) { challengeResult = data; return this; },
+    };
+
+    twitchEventSub.handleWebhook(mockChallengeReq, mockChallengeRes);
+    assert.strictEqual(challengeStatus, 200, 'Webhook challenge must return 200');
+    assert.strictEqual(challengeResult, testChallenge, 'Webhook challenge must echo challenge string');
+
+    // 2. Notification event with valid HMAC signature
+    let emittedRedemption = null;
+    const onRedemption = ({ broadcasterId, redemption }) => {
+      emittedRedemption = { broadcasterId, redemption };
+    };
+    twitchEventSub.once('redemption', onRedemption);
+
+    const notifPayload = {
+      subscription: { type: 'channel.channel_points_custom_reward_redemption.add' },
+      event: {
+        id: 'wh_red_01',
+        broadcaster_user_id: user1.id,
+        user_id: 'viewer_99',
+        user_name: 'webhook_fan',
+        user_input: '',
+        reward: { id: 'rew_1', title: 'แต้มพิเศษ', cost: 100 },
+        redeemed_at: timestamp,
+      },
+    };
+    const notifBody = JSON.stringify(notifPayload);
+    const notifHmac = 'sha256=' + crypto.createHmac('sha256', secret).update(messageId + timestamp + notifBody).digest('hex');
+
+    let notifStatus = null;
+    const mockNotifReq = {
+      headers: {
+        'twitch-eventsub-message-id': messageId,
+        'twitch-eventsub-message-timestamp': timestamp,
+        'twitch-eventsub-message-signature': notifHmac,
+        'twitch-eventsub-message-type': 'notification',
+      },
+      body: notifPayload,
+      rawBody: Buffer.from(notifBody),
+    };
+    const mockNotifRes = {
+      status(s) { notifStatus = s; return this; },
+      end() { return this; },
+    };
+
+    twitchEventSub.handleWebhook(mockNotifReq, mockNotifRes);
+    assert.strictEqual(notifStatus, 204, 'Notification webhook must return 204 No Content');
+    assert.ok(emittedRedemption, 'Redemption event must be emitted');
+    assert.strictEqual(emittedRedemption.broadcasterId, user1.id);
+    assert.strictEqual(emittedRedemption.redemption.rewardTitle, 'แต้มพิเศษ');
+
+    // 3. Invalid signature reject
+    let rejectStatus = null;
+    const mockInvalidReq = {
+      headers: {
+        'twitch-eventsub-message-id': messageId,
+        'twitch-eventsub-message-timestamp': timestamp,
+        'twitch-eventsub-message-signature': 'sha256=invalid_tampered_signature',
+        'twitch-eventsub-message-type': 'notification',
+      },
+      body: notifPayload,
+      rawBody: Buffer.from(notifBody),
+    };
+    const mockInvalidRes = {
+      status(s) { rejectStatus = s; return this; },
+      send() { return this; },
+    };
+    twitchEventSub.handleWebhook(mockInvalidReq, mockInvalidRes);
+    assert.strictEqual(rejectStatus, 403, 'Invalid HMAC signature must be rejected with 403 Forbidden');
+  });
+
   console.log('\n====================================================');
   console.log(`  MULTI-USER TEST RESULTS: ${passedTests}/${totalTests} tests passed`);
   console.log('====================================================\n');

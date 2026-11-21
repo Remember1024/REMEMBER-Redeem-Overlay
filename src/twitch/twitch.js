@@ -106,7 +106,7 @@ export class TwitchMultiUserManager extends EventEmitter {
     }
   }
 
-  async ensureUserSubscribed(user) {
+  async ensureUserSubscribed(user, customCallbackUrl) {
     try {
       // Validate or refresh token
       let accessToken = user.access_token;
@@ -123,7 +123,12 @@ export class TwitchMultiUserManager extends EventEmitter {
         userRepo.upsertUser(user);
       }
 
-      await twitchEventSub.subscribeUser(user);
+      const callbackUrl = customCallbackUrl || config.twitch.webhookCallbackUrl;
+      if (callbackUrl) {
+        await twitchEventSub.subscribeUserWebhook(user, callbackUrl);
+      } else {
+        await twitchEventSub.subscribeUser(user);
+      }
     } catch (err) {
       console.error(`[Twitch Multi-User] Error subscribing user @${user.login}:`, err.message);
     }
@@ -152,8 +157,20 @@ export class TwitchMultiUserManager extends EventEmitter {
       tokenExpiresAt: Date.now() + (tokenData.expires_in || 3600) * 1000,
     });
 
-    // Subscribe immediately in EventSub
-    await this.ensureUserSubscribed(user);
+    // Auto-detect public HTTPS callback URL from OAuth redirectUri
+    let detectedCallbackUrl = config.twitch.webhookCallbackUrl;
+    try {
+      const redirectOrigin = new URL(stateData.redirectUri).origin;
+      if (redirectOrigin.startsWith('https://') && !redirectOrigin.includes('localhost') && !redirectOrigin.includes('127.0.0.1')) {
+        detectedCallbackUrl = `${redirectOrigin}/api/eventsub/callback`;
+        if (!config.twitch.webhookCallbackUrl) {
+          config.twitch.webhookCallbackUrl = detectedCallbackUrl;
+        }
+      }
+    } catch {}
+
+    // Subscribe immediately in EventSub (using Webhook if HTTPS, or WebSocket fallback)
+    await this.ensureUserSubscribed(user, detectedCallbackUrl);
 
     // Create web session token
     const sessionToken = authRepo.createSession(user.id);

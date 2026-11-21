@@ -154,6 +154,34 @@ export class TwitchOAuth {
     const data = await res.json();
     return data.data?.[0]; // { id, login, display_name, profile_image_url }
   }
+
+  async getAppAccessToken() {
+    if (this.appToken && this.appTokenExpiresAt > Date.now() + 60000) {
+      return this.appToken;
+    }
+
+    const params = new URLSearchParams({
+      client_id: config.twitch.clientId,
+      client_secret: config.twitch.clientSecret,
+      grant_type: 'client_credentials',
+    });
+
+    const res = await fetch('https://id.twitch.tv/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Failed to get app access token: ${err}`);
+    }
+
+    const data = await res.json();
+    this.appToken = data.access_token;
+    this.appTokenExpiresAt = Date.now() + (data.expires_in || 3600) * 1000;
+    return this.appToken;
+  }
 }
 
 export const twitchOAuth = new TwitchOAuth();

@@ -30,6 +30,8 @@ export const config = {
     clientSecret: process.env.TWITCH_CLIENT_SECRET?.trim() || '',
     redirectUri: process.env.TWITCH_REDIRECT_URI?.trim() || '',
     eventsubWsUrl: 'wss://eventsub.wss.twitch.tv/ws',
+    webhookSecret: process.env.TWITCH_WEBHOOK_SECRET?.trim() || process.env.TWITCH_CLIENT_SECRET?.trim() || 'remember_overlay_webhook_secret',
+    webhookCallbackUrl: process.env.TWITCH_WEBHOOK_CALLBACK_URL?.trim() || '',
   },
   obs: {
     url: process.env.OBS_WS_URL?.trim() || 'ws://127.0.0.1:4455',
