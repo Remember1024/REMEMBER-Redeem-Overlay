@@ -86,6 +86,11 @@ async function runAsyncTest(description, fn) {
       cardRadius: '24px',
       whitelistWords: ['รักแรกมันแยกยาก', 'แต้มพิเศษประจำวัน'],
       soundEnabled: false,
+      atColor: '#c084fc',
+      hashColor: '#38bdf8',
+      rewardColor: '#fef08a',
+      borderEnabled: false,
+      bloomEnabled: false,
     });
 
     assert.strictEqual(updatedUser1.badge_text, '✨ ผู้เปิดพิธี');
@@ -101,6 +106,11 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(updatedUser1.card_glow_color, '#10b981');
     assert.strictEqual(updatedUser1.card_radius, '24px');
     assert.strictEqual(updatedUser1.sound_enabled, 0);
+    assert.strictEqual(updatedUser1.at_color, '#c084fc');
+    assert.strictEqual(updatedUser1.hash_color, '#38bdf8');
+    assert.strictEqual(updatedUser1.reward_color, '#fef08a');
+    assert.strictEqual(updatedUser1.border_enabled, 0);
+    assert.strictEqual(updatedUser1.bloom_enabled, 0);
     assert.deepStrictEqual(JSON.parse(updatedUser1.whitelist_words), ['รักแรกมันแยกยาก', 'แต้มพิเศษประจำวัน']);
 
     // Verify User 2 remains untouched
@@ -114,6 +124,8 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(freshUser2.card_border_color, '#c4b5fd');
     assert.strictEqual(freshUser2.card_glow_color, '#a855f7');
     assert.strictEqual(freshUser2.card_radius, '16px');
+    assert.strictEqual(freshUser2.border_enabled, 1);
+    assert.strictEqual(freshUser2.bloom_enabled, 1);
   });
 
   // Test 3: Session Stream Start & 1st Redeemer Order

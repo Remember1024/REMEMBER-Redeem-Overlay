@@ -20,15 +20,18 @@
   // Settings
   const settingsForm = document.getElementById('settingsForm');
   const badgeTextInput = document.getElementById('badgeTextInput');
-  const badgeColorPicker = document.getElementById('badgeColorPicker');
-  const badgeBgColorPicker = document.getElementById('badgeBgColorPicker');
+  const atColorPicker = document.getElementById('atColorPicker');
+  const viewerColorPicker = document.getElementById('viewerColorPicker');
+  const hashColorPicker = document.getElementById('hashColorPicker');
+  const rewardColorPicker = document.getElementById('rewardColorPicker');
   const fontFamilySelect = document.getElementById('fontFamilySelect');
   const fontSizeScaleSelect = document.getElementById('fontSizeScaleSelect');
-  const viewerColorPicker = document.getElementById('viewerColorPicker');
   const cardThemeSelect = document.getElementById('cardThemeSelect');
   const cardBgColorPicker = document.getElementById('cardBgColorPicker');
   const cardBgOpacitySelect = document.getElementById('cardBgOpacitySelect');
+  const borderToggle = document.getElementById('borderToggle');
   const cardBorderColorPicker = document.getElementById('cardBorderColorPicker');
+  const bloomToggle = document.getElementById('bloomToggle');
   const cardGlowColorPicker = document.getElementById('cardGlowColorPicker');
   const cardRadiusSelect = document.getElementById('cardRadiusSelect');
   const soundToggle = document.getElementById('soundToggle');
@@ -48,7 +51,9 @@
   const previewCard = document.getElementById('previewCard');
   const previewLiveIndicator = document.getElementById('previewLiveIndicator');
   const previewIndicatorLabel = document.getElementById('previewIndicatorLabel');
+  const previewPrefixAt = document.getElementById('previewPrefixAt');
   const previewViewer = document.getElementById('previewViewer');
+  const previewPrefixHash = document.getElementById('previewPrefixHash');
   const previewRewardTitle = document.getElementById('previewRewardTitle');
   const resetOverlayBtn = document.getElementById('resetOverlayBtn');
   const sendTestRedeemBtn = document.getElementById('sendTestRedeemBtn');
@@ -128,19 +133,27 @@
 
     updateOverlayUrl(currentUser.overlayToken);
 
-    badgeTextInput.value = currentUser.badgeText || '👑 1ST REDEEMER';
-    badgeColorPicker.value = currentUser.badgeColor || '#fbbf24';
-    if (badgeBgColorPicker) badgeBgColorPicker.value = currentUser.badgeBgColor?.startsWith('#') ? currentUser.badgeBgColor : '#451a03';
+    if (badgeTextInput) badgeTextInput.value = currentUser.badgeText || '👑 1ST REDEEMER';
+    if (atColorPicker) atColorPicker.value = currentUser.atColor || currentUser.badgeColor || '#fbbf24';
+    if (viewerColorPicker) viewerColorPicker.value = currentUser.viewerColor || '#ffffff';
+    if (hashColorPicker) hashColorPicker.value = currentUser.hashColor || currentUser.cardBorderColor || '#c4b5fd';
+    if (rewardColorPicker) rewardColorPicker.value = currentUser.rewardColor || '#ffffff';
     if (fontFamilySelect) fontFamilySelect.value = currentUser.fontFamily || 'Kanit';
     if (fontSizeScaleSelect) fontSizeScaleSelect.value = String(currentUser.fontSizeScale || 1.0);
-    if (viewerColorPicker) viewerColorPicker.value = currentUser.viewerColor || '#ffffff';
-    cardThemeSelect.value = currentUser.cardTheme || 'purple';
+    if (cardThemeSelect) cardThemeSelect.value = currentUser.cardTheme || 'purple';
     if (cardBgColorPicker) cardBgColorPicker.value = currentUser.cardBgColor || '#1c1030';
     if (cardBgOpacitySelect) cardBgOpacitySelect.value = String(currentUser.cardBgOpacity ?? 0.94);
-    if (cardBorderColorPicker) cardBorderColorPicker.value = currentUser.cardBorderColor || '#c4b5fd';
-    if (cardGlowColorPicker) cardGlowColorPicker.value = currentUser.cardGlowColor || '#a855f7';
+
+    const isBorderOn = currentUser.borderEnabled !== false && currentUser.cardBorderColor !== 'transparent';
+    if (borderToggle) borderToggle.checked = isBorderOn;
+    if (cardBorderColorPicker) cardBorderColorPicker.value = (currentUser.cardBorderColor && currentUser.cardBorderColor !== 'transparent') ? currentUser.cardBorderColor : '#c4b5fd';
+
+    const isBloomOn = currentUser.bloomEnabled !== false && currentUser.cardGlowColor !== 'transparent';
+    if (bloomToggle) bloomToggle.checked = isBloomOn;
+    if (cardGlowColorPicker) cardGlowColorPicker.value = (currentUser.cardGlowColor && currentUser.cardGlowColor !== 'transparent') ? currentUser.cardGlowColor : '#a855f7';
+
     if (cardRadiusSelect) cardRadiusSelect.value = currentUser.cardRadius || '16px';
-    soundToggle.checked = Boolean(currentUser.soundEnabled);
+    if (soundToggle) soundToggle.checked = Boolean(currentUser.soundEnabled);
 
     renderTags();
     updateLivePreview();
@@ -206,21 +219,11 @@
     }
   });
 
-  // Color chips
-  document.querySelectorAll('.color-chip').forEach((chip) => {
+  // Color chips for @, viewer, #, and reward
+  document.querySelectorAll('.at-color-chip').forEach((chip) => {
     chip.addEventListener('click', () => {
       const color = chip.getAttribute('data-color');
-      badgeColorPicker.value = color;
-      updateLivePreview();
-    });
-  });
-
-  document.querySelectorAll('.color-bg-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const bgcolor = chip.getAttribute('data-bgcolor');
-      if (badgeBgColorPicker) {
-        badgeBgColorPicker.dataset.chosenBg = bgcolor;
-      }
+      if (atColorPicker) atColorPicker.value = color;
       updateLivePreview();
     });
   });
@@ -229,6 +232,22 @@
     chip.addEventListener('click', () => {
       const color = chip.getAttribute('data-color');
       if (viewerColorPicker) viewerColorPicker.value = color;
+      updateLivePreview();
+    });
+  });
+
+  document.querySelectorAll('.hash-color-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const color = chip.getAttribute('data-color');
+      if (hashColorPicker) hashColorPicker.value = color;
+      updateLivePreview();
+    });
+  });
+
+  document.querySelectorAll('.reward-color-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const color = chip.getAttribute('data-color');
+      if (rewardColorPicker) rewardColorPicker.value = color;
       updateLivePreview();
     });
   });
@@ -246,7 +265,12 @@
   document.querySelectorAll('.card-border-chip').forEach((chip) => {
     chip.addEventListener('click', () => {
       const color = chip.getAttribute('data-color');
-      if (cardBorderColorPicker) cardBorderColorPicker.value = color;
+      if (color === 'transparent') {
+        if (borderToggle) borderToggle.checked = false;
+      } else {
+        if (borderToggle) borderToggle.checked = true;
+        if (cardBorderColorPicker) cardBorderColorPicker.value = color;
+      }
       if (cardThemeSelect) cardThemeSelect.value = 'custom';
       updateLivePreview();
     });
@@ -255,7 +279,12 @@
   document.querySelectorAll('.card-glow-chip').forEach((chip) => {
     chip.addEventListener('click', () => {
       const color = chip.getAttribute('data-color');
-      if (cardGlowColorPicker) cardGlowColorPicker.value = color;
+      if (color === 'transparent') {
+        if (bloomToggle) bloomToggle.checked = false;
+      } else {
+        if (bloomToggle) bloomToggle.checked = true;
+        if (cardGlowColorPicker) cardGlowColorPicker.value = color;
+      }
       if (cardThemeSelect) cardThemeSelect.value = 'custom';
       updateLivePreview();
     });
@@ -268,7 +297,9 @@
     if (preset) {
       if (cardBgColorPicker) cardBgColorPicker.value = preset.bg;
       if (cardBgOpacitySelect) cardBgOpacitySelect.value = preset.opacity;
+      if (borderToggle) borderToggle.checked = true;
       if (cardBorderColorPicker) cardBorderColorPicker.value = preset.border;
+      if (bloomToggle) bloomToggle.checked = true;
       if (cardGlowColorPicker) cardGlowColorPicker.value = preset.glow;
       if (cardRadiusSelect) cardRadiusSelect.value = preset.radius;
     }
@@ -277,7 +308,7 @@
 
   // Custom theme controls change -> switch theme to 'custom'
   function onCustomCardStyleChange() {
-    if (cardThemeSelect.value !== 'custom') {
+    if (cardThemeSelect && cardThemeSelect.value !== 'custom') {
       cardThemeSelect.value = 'custom';
     }
     updateLivePreview();
@@ -285,65 +316,98 @@
 
   if (cardBgColorPicker) cardBgColorPicker.addEventListener('input', onCustomCardStyleChange);
   if (cardBgOpacitySelect) cardBgOpacitySelect.addEventListener('change', onCustomCardStyleChange);
-  if (cardBorderColorPicker) cardBorderColorPicker.addEventListener('input', onCustomCardStyleChange);
-  if (cardGlowColorPicker) cardGlowColorPicker.addEventListener('input', onCustomCardStyleChange);
+  if (borderToggle) borderToggle.addEventListener('change', onCustomCardStyleChange);
+  if (cardBorderColorPicker) {
+    cardBorderColorPicker.addEventListener('input', () => {
+      if (borderToggle) borderToggle.checked = true;
+      onCustomCardStyleChange();
+    });
+  }
+  if (bloomToggle) bloomToggle.addEventListener('change', onCustomCardStyleChange);
+  if (cardGlowColorPicker) {
+    cardGlowColorPicker.addEventListener('input', () => {
+      if (bloomToggle) bloomToggle.checked = true;
+      onCustomCardStyleChange();
+    });
+  }
   if (cardRadiusSelect) cardRadiusSelect.addEventListener('change', onCustomCardStyleChange);
 
-  // Real-time preview updates
-  badgeTextInput.addEventListener('input', updateLivePreview);
-  badgeColorPicker.addEventListener('input', updateLivePreview);
-  if (badgeBgColorPicker) badgeBgColorPicker.addEventListener('input', updateLivePreview);
+  // Real-time preview updates for text and colors
+  if (atColorPicker) atColorPicker.addEventListener('input', updateLivePreview);
+  if (viewerColorPicker) viewerColorPicker.addEventListener('input', updateLivePreview);
+  if (hashColorPicker) hashColorPicker.addEventListener('input', updateLivePreview);
+  if (rewardColorPicker) rewardColorPicker.addEventListener('input', updateLivePreview);
   if (fontFamilySelect) fontFamilySelect.addEventListener('change', updateLivePreview);
   if (fontSizeScaleSelect) fontSizeScaleSelect.addEventListener('change', updateLivePreview);
-  if (viewerColorPicker) viewerColorPicker.addEventListener('input', updateLivePreview);
 
   function updateLivePreview() {
-    const badgeText = badgeTextInput.value.trim() || '👑 1ST REDEEMER';
-    const badgeColor = badgeColorPicker.value || '#fbbf24';
-    const badgeBg = badgeBgColorPicker?.dataset?.chosenBg || badgeBgColorPicker?.value || 'rgba(245, 158, 11, 0.22)';
+    const atColor = atColorPicker?.value || '#fbbf24';
+    const viewerColor = viewerColorPicker?.value || '#ffffff';
+    const hashColor = hashColorPicker?.value || '#c4b5fd';
+    const rewardColor = rewardColorPicker?.value || '#ffffff';
     const fontFamily = fontFamilySelect?.value || 'Kanit';
     const fontScale = fontSizeScaleSelect?.value || '1.0';
-    const viewerColor = viewerColorPicker?.value || '#ffffff';
-    const theme = cardThemeSelect.value || 'purple';
+    const theme = cardThemeSelect?.value || 'purple';
 
     const bgColor = cardBgColorPicker?.value || '#1c1030';
-    const bgOpacity = parseFloat(cardBgOpacitySelect?.value || '0.94');
-    const borderColor = cardBorderColorPicker?.value || '#c4b5fd';
-    const glowColor = cardGlowColorPicker?.value || '#a855f7';
+    const bgOpacity = parseFloat(cardBgOpacitySelect?.value ?? '0.94');
+    const isBorderEnabled = Boolean(borderToggle?.checked);
+    const borderColor = isBorderEnabled ? (cardBorderColorPicker?.value || '#c4b5fd') : 'transparent';
+    const isBloomEnabled = Boolean(bloomToggle?.checked);
+    const glowColor = isBloomEnabled ? (cardGlowColorPicker?.value || '#a855f7') : 'transparent';
     const radius = cardRadiusSelect?.value || '16px';
-
-    const bgRgba = hexToRgba(bgColor, bgOpacity);
-    const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
-    const borderRgba = hexToRgba(borderColor, 0.35);
-    const glowBoxRgba = hexToRgba(glowColor, 0.28);
-    const glowAmbientRgba = hexToRgba(glowColor, 0.35);
-
-    if (previewIndicatorLabel) {
-      previewIndicatorLabel.textContent = badgeText;
-      previewIndicatorLabel.style.color = badgeColor;
-    }
-    if (previewLiveIndicator) {
-      previewLiveIndicator.style.borderColor = badgeColor;
-      previewLiveIndicator.style.background = badgeBg;
-    }
-
-    if (previewViewer) previewViewer.style.color = viewerColor;
 
     previewCard.style.setProperty('--overlay-font', fontFamily);
     previewCard.style.setProperty('--overlay-scale', fontScale);
-    previewCard.style.setProperty('--badge-color', badgeColor);
-    previewCard.style.setProperty('--badge-bg', badgeBg);
-    previewCard.style.setProperty('--badge-glow', `${badgeColor}66`);
+    previewCard.style.setProperty('--badge-color', atColor);
+    previewCard.style.setProperty('--at-color', atColor);
+    previewCard.style.setProperty('--at-glow', `${atColor}66`);
     previewCard.style.setProperty('--viewer-color', viewerColor);
+    previewCard.style.setProperty('--hash-color', hashColor);
+    previewCard.style.setProperty('--hash-glow', `${hashColor}66`);
+    previewCard.style.setProperty('--reward-color', rewardColor);
 
-    // Custom card theme variables
-    previewCard.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
-    previewCard.style.setProperty('--card-border', borderRgba);
-    previewCard.style.setProperty('--card-glow', glowBoxRgba);
-    previewCard.style.setProperty('--card-glow-ambient', glowAmbientRgba);
+    // Card background (handle transparent 0%)
+    if (bgOpacity === 0) {
+      previewCard.style.setProperty('--card-bg', 'transparent');
+    } else {
+      const bgRgba = hexToRgba(bgColor, bgOpacity);
+      const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
+      previewCard.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
+    }
+
     previewCard.style.setProperty('--card-radius', radius);
 
-    previewCard.className = `redeem-card theme-${theme} first-redeemer`;
+    // Border handling
+    if (isBorderEnabled && borderColor !== 'transparent') {
+      previewCard.classList.remove('no-border');
+      const borderRgba = hexToRgba(borderColor, 0.35);
+      previewCard.style.setProperty('--card-border', borderRgba);
+    } else {
+      previewCard.classList.add('no-border');
+      previewCard.style.setProperty('--card-border', 'transparent');
+    }
+
+    // Bloom / Glow handling
+    if (isBloomEnabled && glowColor !== 'transparent') {
+      previewCard.classList.remove('no-bloom');
+      const glowBoxRgba = hexToRgba(glowColor, 0.28);
+      const glowAmbientRgba = hexToRgba(glowColor, 0.35);
+      previewCard.style.setProperty('--card-glow', glowBoxRgba);
+      previewCard.style.setProperty('--card-glow-ambient', glowAmbientRgba);
+    } else {
+      previewCard.classList.add('no-bloom');
+      previewCard.style.setProperty('--card-glow', 'transparent');
+      previewCard.style.setProperty('--card-glow-ambient', 'transparent');
+    }
+
+    // Direct text styling on preview spans
+    if (previewPrefixAt) previewPrefixAt.style.color = atColor;
+    if (previewViewer) previewViewer.style.color = viewerColor;
+    if (previewPrefixHash) previewPrefixHash.style.color = hashColor;
+    if (previewRewardTitle) previewRewardTitle.style.color = rewardColor;
+
+    previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled ? ' no-border' : ''}${!isBloomEnabled ? ' no-bloom' : ''}`;
 
     if (currentWhitelist.length > 0) {
       previewRewardTitle.textContent = currentWhitelist[0];
@@ -387,20 +451,30 @@
   settingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const isBorderEnabled = Boolean(borderToggle?.checked);
+    const borderColor = isBorderEnabled ? (cardBorderColorPicker?.value || '#c4b5fd') : 'transparent';
+    const isBloomEnabled = Boolean(bloomToggle?.checked);
+    const glowColor = isBloomEnabled ? (cardGlowColorPicker?.value || '#a855f7') : 'transparent';
+
     const payload = {
-      badgeText: badgeTextInput.value.trim(),
-      badgeColor: badgeColorPicker.value,
-      badgeBgColor: badgeBgColorPicker?.dataset?.chosenBg || badgeBgColorPicker?.value || 'rgba(245, 158, 11, 0.22)',
+      badgeText: badgeTextInput?.value?.trim() || '👑 1ST REDEEMER',
+      badgeColor: atColorPicker?.value || '#fbbf24',
+      badgeBgColor: 'rgba(245, 158, 11, 0.22)',
       fontFamily: fontFamilySelect?.value || 'Kanit',
       fontSizeScale: parseFloat(fontSizeScaleSelect?.value || '1.0'),
       viewerColor: viewerColorPicker?.value || '#ffffff',
-      cardTheme: cardThemeSelect.value,
+      atColor: atColorPicker?.value || '#fbbf24',
+      hashColor: hashColorPicker?.value || '#c4b5fd',
+      rewardColor: rewardColorPicker?.value || '#ffffff',
+      borderEnabled: isBorderEnabled,
+      bloomEnabled: isBloomEnabled,
+      cardTheme: cardThemeSelect?.value || 'purple',
       cardBgColor: cardBgColorPicker?.value || '#1c1030',
       cardBgOpacity: parseFloat(cardBgOpacitySelect?.value || '0.94'),
-      cardBorderColor: cardBorderColorPicker?.value || '#c4b5fd',
-      cardGlowColor: cardGlowColorPicker?.value || '#a855f7',
+      cardBorderColor: borderColor,
+      cardGlowColor: glowColor,
       cardRadius: cardRadiusSelect?.value || '16px',
-      soundEnabled: soundToggle.checked,
+      soundEnabled: Boolean(soundToggle?.checked),
       whitelistWords: currentWhitelist,
     };
 
@@ -597,7 +671,7 @@
           previewRewardTitle.textContent = payload.data.rewardTitle;
           showToast(`🎉 มีการแลกแต้มสด: ${payload.data.displayName} (${payload.data.rewardTitle})`);
         }
-      } catch {}
+      } catch { }
     };
 
     dashboardWs.onclose = () => {

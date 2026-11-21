@@ -23,6 +23,11 @@
     fontFamily: 'Kanit',
     fontSizeScale: 1.0,
     viewerColor: '#ffffff',
+    atColor: '#fbbf24',
+    hashColor: '#c4b5fd',
+    rewardColor: '#ffffff',
+    borderEnabled: true,
+    bloomEnabled: true,
     cardTheme: 'purple',
     cardBgColor: '#1c1030',
     cardBgOpacity: 0.94,
@@ -232,10 +237,21 @@
     applyTheme(currentUser.cardTheme);
     cardElement.style.setProperty('--overlay-font', currentUser.fontFamily || 'Kanit');
     cardElement.style.setProperty('--overlay-scale', currentUser.fontSizeScale || 1.0);
-    cardElement.style.setProperty('--badge-color', currentUser.badgeColor || '#fbbf24');
+
+    const atColor = currentUser.atColor || currentUser.badgeColor || '#fbbf24';
+    const hashColor = currentUser.hashColor || currentUser.cardBorderColor || '#c4b5fd';
+    const viewerColor = currentUser.viewerColor || '#ffffff';
+    const rewardColor = currentUser.rewardColor || '#ffffff';
+
+    cardElement.style.setProperty('--badge-color', atColor);
     cardElement.style.setProperty('--badge-bg', currentUser.badgeBgColor || 'rgba(245, 158, 11, 0.22)');
-    cardElement.style.setProperty('--badge-glow', `${currentUser.badgeColor || '#fbbf24'}66`);
-    cardElement.style.setProperty('--viewer-color', currentUser.viewerColor || '#ffffff');
+    cardElement.style.setProperty('--badge-glow', `${atColor}66`);
+    cardElement.style.setProperty('--at-color', atColor);
+    cardElement.style.setProperty('--at-glow', `${atColor}66`);
+    cardElement.style.setProperty('--viewer-color', viewerColor);
+    cardElement.style.setProperty('--hash-color', hashColor);
+    cardElement.style.setProperty('--hash-glow', `${hashColor}66`);
+    cardElement.style.setProperty('--reward-color', rewardColor);
 
     // Theme & custom card properties
     const themeKey = currentUser.cardTheme || 'purple';
@@ -249,17 +265,41 @@
     const glowColor = currentUser.cardGlowColor || preset?.glow || '#a855f7';
     const radius = currentUser.cardRadius || preset?.radius || '16px';
 
-    const bgRgba = hexToRgba(bgColor, bgOpacity);
-    const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
-    const borderRgba = hexToRgba(borderColor, 0.35);
-    const glowBoxRgba = hexToRgba(glowColor, 0.28);
-    const glowAmbientRgba = hexToRgba(glowColor, 0.35);
+    const isBorderEnabled = currentUser.borderEnabled !== false && borderColor !== 'transparent';
+    const isBloomEnabled = currentUser.bloomEnabled !== false && glowColor !== 'transparent';
 
-    cardElement.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
-    cardElement.style.setProperty('--card-border', borderRgba);
-    cardElement.style.setProperty('--card-glow', glowBoxRgba);
-    cardElement.style.setProperty('--card-glow-ambient', glowAmbientRgba);
+    if (bgOpacity === 0) {
+      cardElement.style.setProperty('--card-bg', 'transparent');
+    } else {
+      const bgRgba = hexToRgba(bgColor, bgOpacity);
+      const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
+      cardElement.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
+    }
+
     cardElement.style.setProperty('--card-radius', radius);
+
+    // Border handling
+    if (isBorderEnabled) {
+      cardElement.classList.remove('no-border');
+      const borderRgba = borderColor === 'transparent' ? 'transparent' : hexToRgba(borderColor, 0.35);
+      cardElement.style.setProperty('--card-border', borderRgba);
+    } else {
+      cardElement.classList.add('no-border');
+      cardElement.style.setProperty('--card-border', 'transparent');
+    }
+
+    // Bloom / Glow handling
+    if (isBloomEnabled) {
+      cardElement.classList.remove('no-bloom');
+      const glowBoxRgba = glowColor === 'transparent' ? 'transparent' : hexToRgba(glowColor, 0.28);
+      const glowAmbientRgba = glowColor === 'transparent' ? 'transparent' : hexToRgba(glowColor, 0.35);
+      cardElement.style.setProperty('--card-glow', glowBoxRgba);
+      cardElement.style.setProperty('--card-glow-ambient', glowAmbientRgba);
+    } else {
+      cardElement.classList.add('no-bloom');
+      cardElement.style.setProperty('--card-glow', 'transparent');
+      cardElement.style.setProperty('--card-glow-ambient', 'transparent');
+    }
   }
 
   function applyTheme(theme) {

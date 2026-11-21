@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>REMEMBER - Twitch First Redeemer Overlay</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=Kanit:wght@300;400;500;600;700&amp;family=Mitr:wght@400;500;600&amp;family=Outfit:wght@400;500;600;700;800&amp;family=Prompt:wght@400;500;600;700&amp;family=Sarabun:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=Kanit:wght@300;400;500;600;700&amp;family=Mitr:wght@400;500;600&amp;family=Outfit:wght@400;500;600;700;800&amp;family=Prompt:wght@400;500;600;700&amp;family=Sarabun:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden" aria-live="polite" role="status"></div>
@@ -18,26 +22,28 @@
     <div class="hero-section">
       <div class="hero-badge">
         <svg viewBox="0 0 24 24" fill="currentColor" class="badge-icon">
-          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
         </svg>
         <span>TWITCH FIRST REDEEMER OVERLAY</span>
       </div>
 
       <h1 class="hero-title">แสดงผู้ชมที่แลกแต้ม <span class="highlight">คนแรกของสตรีม</span> บน OBS</h1>
       <p class="hero-subtitle">
-        เชื่อมต่อตรงกับ Twitch Channel Points โดยไม่ต้องใช้บอทคนกลาง ปรับแต่ง Badge ประจำตัว และระบุชื่อแต้ม (Whitelist) ที่อนุญาตให้แสดงได้อิสระสำหรับสตรีมเมอร์ทุกคน
+        เชื่อมต่อตรงกับ Twitch Channel Points โดยไม่ต้องใช้บอทคนกลาง ปรับแต่ง Badge ประจำตัว และระบุชื่อแต้ม (Whitelist)
+        ที่อนุญาตให้แสดงได้อิสระสำหรับสตรีมเมอร์ทุกคน
       </p>
 
       <div class="hero-actions">
         <a href="/auth/twitch/login" class="btn btn-twitch-lg">
           <svg viewBox="0 0 24 24" fill="currentColor" class="twitch-icon">
-            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+            <path
+              d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
           </svg>
           Sign in with Twitch
         </a>
-        <a id="devLoginBtn" href="/auth/dev-login" class="btn btn-secondary dev-login-btn">
+        <!-- <a id="devLoginBtn" href="/auth/dev-login" class="btn btn-secondary dev-login-btn">
           🎮 เข้าสู่ระบบทดสอบด่วน (Dev Quick Login)
-        </a>
+        </a> -->
       </div>
 
       <!-- Feature grid preview -->
@@ -68,7 +74,9 @@
       <div class="header-brand">
         <div class="brand-logo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+            </polygon>
           </svg>
         </div>
         <div>
@@ -78,7 +86,9 @@
       </div>
 
       <div class="header-user">
-        <img id="userAvatar" class="user-avatar" src="https://static-cdn.jtvnw.net/user-default-pictures-uv/75305d54-c7cc-40d1-bbbb-6a3f15440b54-profile_image-70x70.png" alt="User Avatar" width="40" height="40">
+        <img id="userAvatar" class="user-avatar"
+          src="https://static-cdn.jtvnw.net/user-default-pictures-uv/75305d54-c7cc-40d1-bbbb-6a3f15440b54-profile_image-70x70.png"
+          alt="User Avatar" width="40" height="40">
         <div class="user-meta">
           <div id="userDisplayName" class="user-name">Streamer</div>
           <div id="userLogin" class="user-handle">@streamer</div>
@@ -94,7 +104,8 @@
         <span id="skippedAlertText">มีการแลกแต้มที่ถูกข้ามเนื่องจากไม่อยู่ใน Whitelist</span>
       </div>
       <div class="skipped-alert-actions">
-        <button type="button" id="addSkippedToWhitelistBtn" class="btn btn-sm btn-primary">+ เพิ่มแต้มนี้ใน Whitelist</button>
+        <button type="button" id="addSkippedToWhitelistBtn" class="btn btn-sm btn-primary">+ เพิ่มแต้มนี้ใน
+          Whitelist</button>
         <button type="button" id="dismissSkippedAlertBtn" class="btn btn-sm btn-ghost">✕</button>
       </div>
     </div>
@@ -107,7 +118,8 @@
             <h2 class="card-title">OBS Browser Source URL</h2>
             <p class="card-desc">นำลิงก์นี้ไปใส่ใน Browser Source ของ OBS Studio (ขนาดแนะนำ: กว้าง 600 x สูง 90)</p>
           </div>
-          <button type="button" id="regenerateTokenBtn" class="btn btn-ghost btn-sm" aria-label="Regenerate overlay token" title="สร้าง Token ใหม่กรณีทำลิงก์หลุด">
+          <button type="button" id="regenerateTokenBtn" class="btn btn-ghost btn-sm"
+            aria-label="Regenerate overlay token" title="สร้าง Token ใหม่กรณีทำลิงก์หลุด">
             🔄 Regenerate Token
           </button>
         </div>
@@ -126,185 +138,280 @@
           <div class="guide-title">📖 วิธีนำไปใส่ใน OBS Studio ใน 3 ขั้นตอน:</div>
           <ol class="guide-steps">
             <li>คลิกปุ่ม <strong>Copy URL</strong> สีม่วงด้านบนนี้</li>
-            <li>ในโปรแกรม <strong>OBS Studio</strong>: ดูที่กล่อง <em>Sources (แหล่งสัญญาณ)</em> กดปุ่ม <strong>+</strong> แล้วเลือก <strong>Browser (เบราว์เซอร์)</strong></li>
-            <li>วางลิงก์ที่ก๊อปปี้มาลงในช่อง <strong>URL</strong> (ตั้งขนาด Width: <strong>600</strong>, Height: <strong>90</strong>) แล้วกด <strong>OK</strong> จบเลย!</li>
+            <li>ในโปรแกรม <strong>OBS Studio</strong>: ดูที่กล่อง <em>Sources (แหล่งสัญญาณ)</em> กดปุ่ม
+              <strong>+</strong> แล้วเลือก <strong>Browser (เบราว์เซอร์)</strong>
+            </li>
+            <li>วางลิงก์ที่ก๊อปปี้มาลงในช่อง <strong>URL</strong> (ตั้งขนาด Width: <strong>600</strong>, Height:
+              <strong>90</strong>) แล้วกด <strong>OK</strong> จบเลย!
+            </li>
           </ol>
         </div>
       </section>
 
-      <!-- 2. Settings Form: Custom Badge and Whitelist Words -->
+      <!-- 2. Settings Form: Overlay Customization -->
       <section class="card settings-card">
         <h2 class="card-title">การปรับแต่ง Overlay ประจำช่องของคุณ</h2>
-        <p class="card-desc">ปรับเปลี่ยนข้อความป้าย สี และรายการแต้มที่อนุญาตให้แสดง</p>
+        <p class="card-desc">ตั้งค่าสีตัวอักษร สีการ์ด เส้นขอบ แสงเรือง Bloom และรายการแต้มที่ต้องการแสดง</p>
 
         <form id="settingsForm">
-          <div class="settings-grid">
-            <!-- Custom Badge Text -->
-            <div class="form-group">
-              <label for="badgeTextInput">ข้อความ Badge (คนแรกของสตรีม)</label>
-              <input type="text" id="badgeTextInput" placeholder="เช่น 👑 1ST REDEEMER, 👑 คนแรกของสตรีม…" required>
-            </div>
+          <!-- Hidden compatibility field -->
+          <input type="hidden" id="badgeTextInput" value="👑 1ST REDEEMER">
 
-            <!-- Badge Accent Color -->
-            <div class="form-group">
-              <label>สีตัวอักษร &amp; เส้นขอบ Badge</label>
-              <div class="color-picker-row">
-                <input type="color" id="badgeColorPicker" value="#fbbf24" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold" aria-label="Gold"></button>
-                  <button type="button" class="color-chip" data-color="#c084fc" style="--chip-color: #c084fc;" title="Neon Violet" aria-label="Neon Violet"></button>
-                  <button type="button" class="color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan" aria-label="Sky Cyan"></button>
-                  <button type="button" class="color-chip" data-color="#fb7185" style="--chip-color: #fb7185;" title="Rose Pink" aria-label="Rose Pink"></button>
-                  <button type="button" class="color-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald" aria-label="Emerald"></button>
+          <!-- Section 1: Colors for Text & Symbols -->
+          <div class="settings-subgroup">
+            <h3 class="subgroup-title">🔤 สีตัวอักษร &amp; สัญลักษณ์</h3>
+            <div class="settings-grid">
+              <!-- Prefix @ Color -->
+              <div class="form-group">
+                <label>สีเครื่องหมาย @ (สัญลักษณ์หน้าชื่อ)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="atColorPicker" value="#fbbf24" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="at-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
+                      title="Gold" aria-label="Gold"></button>
+                    <button type="button" class="at-color-chip" data-color="#c084fc" style="--chip-color: #c084fc;"
+                      title="Violet" aria-label="Violet"></button>
+                    <button type="button" class="at-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
+                      title="Sky Cyan" aria-label="Sky Cyan"></button>
+                    <button type="button" class="at-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;"
+                      title="Rose Pink" aria-label="Rose Pink"></button>
+                    <button type="button" class="at-color-chip" data-color="#34d399" style="--chip-color: #34d399;"
+                      title="Emerald" aria-label="Emerald"></button>
+                    <button type="button" class="at-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White" aria-label="White"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Viewer Name Color -->
+              <div class="form-group">
+                <label>สีชื่อผู้ชม (ชื่อคนแลก)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="viewerColorPicker" value="#ffffff" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="viewer-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White" aria-label="White"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;"
+                      title="Light Gold" aria-label="Light Gold"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;"
+                      title="Lavender" aria-label="Lavender"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;"
+                      title="Ice Cyan" aria-label="Ice Cyan"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;"
+                      title="Pastel Pink" aria-label="Pastel Pink"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#86efac" style="--chip-color: #86efac;"
+                      title="Mint" aria-label="Mint"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Prefix # Color -->
+              <div class="form-group">
+                <label>สีเครื่องหมาย # (สัญลักษณ์หน้าแต้ม)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="hashColorPicker" value="#c4b5fd" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="hash-color-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;"
+                      title="Violet" aria-label="Violet"></button>
+                    <button type="button" class="hash-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
+                      title="Sky Cyan" aria-label="Sky Cyan"></button>
+                    <button type="button" class="hash-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;"
+                      title="Rose Pink" aria-label="Rose Pink"></button>
+                    <button type="button" class="hash-color-chip" data-color="#34d399" style="--chip-color: #34d399;"
+                      title="Emerald" aria-label="Emerald"></button>
+                    <button type="button" class="hash-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
+                      title="Gold" aria-label="Gold"></button>
+                    <button type="button" class="hash-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White" aria-label="White"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reward Title Color -->
+              <div class="form-group">
+                <label>สีชื่อแต้ม (ชื่อรางวัล Channel Point)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="rewardColorPicker" value="#ffffff" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="reward-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White" aria-label="White"></button>
+                    <button type="button" class="reward-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;"
+                      title="Light Gold" aria-label="Light Gold"></button>
+                    <button type="button" class="reward-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;"
+                      title="Lavender" aria-label="Lavender"></button>
+                    <button type="button" class="reward-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;"
+                      title="Ice Cyan" aria-label="Ice Cyan"></button>
+                    <button type="button" class="reward-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;"
+                      title="Pastel Pink" aria-label="Pastel Pink"></button>
+                    <button type="button" class="reward-color-chip" data-color="#86efac" style="--chip-color: #86efac;"
+                      title="Mint" aria-label="Mint"></button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Badge Background Color -->
-            <div class="form-group">
-              <label>สีพื้นหลังกล่อง Badge</label>
-              <div class="color-picker-row">
-                <input type="color" id="badgeBgColorPicker" value="#451a03" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(245, 158, 11, 0.22)" style="--chip-color: rgba(245, 158, 11, 0.4);" title="Amber Glass" aria-label="Amber Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(147, 51, 234, 0.25)" style="--chip-color: rgba(147, 51, 234, 0.5);" title="Violet Glass" aria-label="Violet Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(14, 165, 233, 0.25)" style="--chip-color: rgba(14, 165, 233, 0.5);" title="Cyan Glass" aria-label="Cyan Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(244, 63, 94, 0.25)" style="--chip-color: rgba(244, 63, 94, 0.5);" title="Rose Glass" aria-label="Rose Glass"></button>
-                  <button type="button" class="color-bg-chip" data-bgcolor="rgba(0, 0, 0, 0.5)" style="--chip-color: rgba(0, 0, 0, 0.7); --chip-border: #888;" title="Dark Solid" aria-label="Dark Solid"></button>
+          <!-- Section 2: Card Appearance, Border & Bloom -->
+          <div class="settings-subgroup">
+            <h3 class="subgroup-title">🎨 การ์ด, เส้นขอบ &amp; แสงเรือง Bloom</h3>
+            <div class="settings-grid">
+              <!-- Card Theme Preset Selector -->
+              <div class="form-group">
+                <label for="cardThemeSelect">ธีมการ์ดสำเร็จรูป (Theme Presets)</label>
+                <select id="cardThemeSelect" class="form-select">
+                  <option value="purple" selected>🟣 ม่วงนีออน (Dark Violet - ค่าเริ่มต้น)</option>
+                  <option value="midnight">🔵 น้ำเงินเข้ม (Midnight Obsidian)</option>
+                  <option value="cyberpunk">🔴 ชมพูนีออน (Cyberpunk Slate)</option>
+                  <option value="emerald">🟢 เขียวมรกต (Emerald Matrix)</option>
+                  <option value="sunset">🟠 ส้มอำพัน (Sunset Amber)</option>
+                  <option value="stealth">⚫ ดำสนิท (Stealth Black)</option>
+                  <option value="custom">🎨 ปรับแต่งสีเองอิสระ (Custom)</option>
+                </select>
+              </div>
+
+              <!-- Card Background Color -->
+              <div class="form-group">
+                <label>สีพื้นหลังการ์ด (Card Background)</label>
+                <div class="color-picker-row">
+                  <input type="color" id="cardBgColorPicker" value="#1c1030" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="card-bg-chip" data-color="#1c1030" style="--chip-color: #1c1030;"
+                      title="Dark Violet" aria-label="Dark Violet"></button>
+                    <button type="button" class="card-bg-chip" data-color="#0f172a" style="--chip-color: #0f172a;"
+                      title="Midnight Slate" aria-label="Midnight Slate"></button>
+                    <button type="button" class="card-bg-chip" data-color="#18181b" style="--chip-color: #18181b;"
+                      title="Cyberpunk Black" aria-label="Cyberpunk Black"></button>
+                    <button type="button" class="card-bg-chip" data-color="#022c22" style="--chip-color: #022c22;"
+                      title="Emerald Green" aria-label="Emerald Green"></button>
+                    <button type="button" class="card-bg-chip" data-color="#271406" style="--chip-color: #271406;"
+                      title="Sunset Amber" aria-label="Sunset Amber"></button>
+                    <button type="button" class="card-bg-chip" data-color="#09090b" style="--chip-color: #09090b;"
+                      title="Pitch Dark" aria-label="Pitch Dark"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Background Opacity -->
+              <div class="form-group">
+                <label for="cardBgOpacitySelect">ความโปร่งใสพื้นหลัง (Background Opacity)</label>
+                <select id="cardBgOpacitySelect" class="form-select">
+                  <option value="0">0% (โปร่งใส 100% ทะลุเห็นหลัง ไม่มีพื้นหลัง)</option>
+                  <option value="0.70">70% (โปร่งแสงสูง เห็นภาพเกมด้านหลังชัด)</option>
+                  <option value="0.85">85% (กระจกโปร่งแสงปานกลาง)</option>
+                  <option value="0.94" selected>94% (กระจกมัว คมชัด สวยงาม - แนะนำ)</option>
+                  <option value="1.0">100% (ทึบแสง ไม่โปร่งใส)</option>
+                </select>
+              </div>
+
+              <!-- Card Corner Radius -->
+              <div class="form-group">
+                <label for="cardRadiusSelect">ความโค้งมนของมุมการ์ด (Corner Radius)</label>
+                <select id="cardRadiusSelect" class="form-select">
+                  <option value="4px">4px (เหลี่ยมคม Retro / FPS)</option>
+                  <option value="8px">8px (เหลี่ยมมนเล็กน้อย Sci-Fi)</option>
+                  <option value="16px" selected>16px (โค้งมนมาตรฐาน - ค่าเริ่มต้น)</option>
+                  <option value="24px">24px (โค้งมนมาก มินิมอล สมูท)</option>
+                </select>
+              </div>
+
+              <!-- Border Toggle & Color -->
+              <div class="form-group form-group-toggleable">
+                <div class="label-with-toggle">
+                  <label for="cardBorderColorPicker">เส้นขอบการ์ด (Card Border)</label>
+                  <label class="switch-inline">
+                    <input type="checkbox" id="borderToggle" checked>
+                    <span class="switch-text">เปิดเส้นขอบ</span>
+                  </label>
+                </div>
+                <div id="borderControlsContainer" class="color-picker-row">
+                  <input type="color" id="cardBorderColorPicker" value="#c4b5fd" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="card-border-chip chip-transparent" data-color="transparent"
+                      title="🚫 โปร่งใส (ไม่มีเส้นขอบ)" aria-label="Transparent"></button>
+                    <button type="button" class="card-border-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;"
+                      title="Violet" aria-label="Violet"></button>
+                    <button type="button" class="card-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
+                      title="Sky Cyan" aria-label="Sky Cyan"></button>
+                    <button type="button" class="card-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
+                      title="Rose Pink" aria-label="Rose Pink"></button>
+                    <button type="button" class="card-border-chip" data-color="#34d399" style="--chip-color: #34d399;"
+                      title="Emerald" aria-label="Emerald"></button>
+                    <button type="button" class="card-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
+                      title="Gold" aria-label="Gold"></button>
+                    <button type="button" class="card-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White" aria-label="White"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bloom / Glow Toggle & Color -->
+              <div class="form-group form-group-toggleable">
+                <div class="label-with-toggle">
+                  <label for="cardGlowColorPicker">แสงเรือง Bloom (Neon Glow)</label>
+                  <label class="switch-inline">
+                    <input type="checkbox" id="bloomToggle" checked>
+                    <span class="switch-text">เปิดแสงเรือง Bloom</span>
+                  </label>
+                </div>
+                <div id="bloomControlsContainer" class="color-picker-row">
+                  <input type="color" id="cardGlowColorPicker" value="#a855f7" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="card-glow-chip chip-transparent" data-color="transparent"
+                      title="🚫 ปิดแสงเรือง (Transparent)" aria-label="Transparent"></button>
+                    <button type="button" class="card-glow-chip" data-color="#a855f7" style="--chip-color: #a855f7;"
+                      title="Purple Glow" aria-label="Purple Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
+                      title="Cyan Glow" aria-label="Cyan Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
+                      title="Rose Glow" aria-label="Rose Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#10b981" style="--chip-color: #10b981;"
+                      title="Green Glow" aria-label="Green Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#f59e0b" style="--chip-color: #f59e0b;"
+                      title="Amber Glow" aria-label="Amber Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;"
+                      title="Subtle Slate" aria-label="Subtle Slate"></button>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Font Family -->
-            <div class="form-group">
-              <label for="fontFamilySelect">ฟอนต์ตัวอักษร (Font Family)</label>
-              <select id="fontFamilySelect" class="form-select">
-                <option value="Kanit" selected>Kanit (คานิท - ยอดนิยม คมชัด ทันสมัย)</option>
-                <option value="Prompt">Prompt (พร้อมท์ - เรียบหรู สะอาดตา)</option>
-                <option value="Mitr">Mitr (มิตร - โค้งมน นุ่มนวล น่ารัก)</option>
-                <option value="Chakra Petch">Chakra Petch (จักรเพชร - สไตล์เกมมิ่ง Sci-Fi)</option>
-                <option value="Sarabun">Sarabun (สารบัญ - คลาสสิก อ่านง่าย)</option>
-                <option value="Outfit">Outfit (เอาต์ฟิต - สากล พรีเมียม)</option>
-              </select>
-            </div>
-
-            <!-- Size Scale -->
-            <div class="form-group">
-              <label for="fontSizeScaleSelect">ขนาดการ์ด Overlay (Size Scale)</label>
-              <select id="fontSizeScaleSelect" class="form-select">
-                <option value="0.85">85% (กะทัดรัด เหมาะกับจอ 720p / มุมจอ)</option>
-                <option value="1.0" selected>100% (ขนาดปกติ มาตรฐาน - ค่าเริ่มต้น)</option>
-                <option value="1.2">120% (ขนาดใหญ่ ตัวหนังสือเด่น)</option>
-                <option value="1.4">140% (ขนาดใหญ่พิเศษ ชัดเต็มตา 1080p/4K)</option>
-              </select>
-            </div>
-
-            <!-- Viewer Name Color -->
-            <div class="form-group">
-              <label>สีชื่อผู้ชม (Viewer Name)</label>
-              <div class="color-picker-row">
-                <input type="color" id="viewerColorPicker" value="#ffffff" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="viewer-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White" aria-label="White"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;" title="Light Gold" aria-label="Light Gold"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;" title="Lavender" aria-label="Lavender"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;" title="Ice Cyan" aria-label="Ice Cyan"></button>
-                  <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;" title="Pastel Pink" aria-label="Pastel Pink"></button>
-                </div>
+          <!-- Section 3: Font, Size & Sound -->
+          <div class="settings-subgroup">
+            <h3 class="subgroup-title">⚙️ รูปแบบ &amp; ระบบ</h3>
+            <div class="settings-grid">
+              <!-- Font Family -->
+              <div class="form-group">
+                <label for="fontFamilySelect">ฟอนต์ตัวอักษร (Font Family)</label>
+                <select id="fontFamilySelect" class="form-select">
+                  <option value="Kanit" selected>Kanit (คานิท - ยอดนิยม คมชัด ทันสมัย)</option>
+                  <option value="Prompt">Prompt (พร้อมท์ - เรียบหรู สะอาดตา)</option>
+                  <option value="Mitr">Mitr (มิตร - โค้งมน นุ่มนวล น่ารัก)</option>
+                  <option value="Chakra Petch">Chakra Petch (จักรเพชร - สไตล์เกมมิ่ง Sci-Fi)</option>
+                  <option value="Sarabun">Sarabun (สารบัญ - คลาสสิก อ่านง่าย)</option>
+                  <option value="Outfit">Outfit (เอาต์ฟิต - สากล พรีเมียม)</option>
+                </select>
               </div>
-            </div>
 
-            <!-- Card Theme Preset Selector -->
-            <div class="form-group">
-              <label for="cardThemeSelect">ธีมการ์ด Overlay (Theme Presets)</label>
-              <select id="cardThemeSelect" class="form-select">
-                <option value="purple" selected>🟣 Dark Violet (ม่วงนีออนคลาสสิก - ค่าเริ่มต้น)</option>
-                <option value="midnight">🔵 Midnight Obsidian (น้ำเงินเข้มขอบฟ้า)</option>
-                <option value="cyberpunk">🔴 Cyberpunk Slate (ดำด้านขอบชมพูนีออน)</option>
-                <option value="emerald">🟢 Emerald Matrix (เขียวมรกตนีออน)</option>
-                <option value="sunset">🟠 Sunset Amber (อำพันส้มเรืองแสง)</option>
-                <option value="stealth">⚫ Stealth Black (ดำสนิทมินิมอล)</option>
-                <option value="custom">🎨 Custom (กำหนดสีเองอิสระ)</option>
-              </select>
-            </div>
-
-            <!-- Custom Card Background Color and Opacity -->
-            <div class="form-group">
-              <label>สีพื้นหลังการ์ด (Card Background)</label>
-              <div class="color-picker-row">
-                <input type="color" id="cardBgColorPicker" value="#1c1030" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="card-bg-chip" data-color="#1c1030" style="--chip-color: #1c1030;" title="Dark Violet" aria-label="Dark Violet"></button>
-                  <button type="button" class="card-bg-chip" data-color="#0f172a" style="--chip-color: #0f172a;" title="Midnight Slate" aria-label="Midnight Slate"></button>
-                  <button type="button" class="card-bg-chip" data-color="#18181b" style="--chip-color: #18181b;" title="Cyberpunk Black" aria-label="Cyberpunk Black"></button>
-                  <button type="button" class="card-bg-chip" data-color="#022c22" style="--chip-color: #022c22;" title="Emerald Green" aria-label="Emerald Green"></button>
-                  <button type="button" class="card-bg-chip" data-color="#271406" style="--chip-color: #271406;" title="Sunset Amber" aria-label="Sunset Amber"></button>
-                  <button type="button" class="card-bg-chip" data-color="#09090b" style="--chip-color: #09090b;" title="Pitch Dark" aria-label="Pitch Dark"></button>
-                </div>
+              <!-- Size Scale -->
+              <div class="form-group">
+                <label for="fontSizeScaleSelect">ขนาด Overlay (Size Scale)</label>
+                <select id="fontSizeScaleSelect" class="form-select">
+                  <option value="0.85">85% (กะทัดรัด เหมาะกับมุมจอ)</option>
+                  <option value="1.0" selected>100% (ขนาดปกติ มาตรฐาน - ค่าเริ่มต้น)</option>
+                  <option value="1.2">120% (ขนาดใหญ่ ตัวหนังสือเด่น)</option>
+                  <option value="1.4">140% (ขนาดใหญ่พิเศษ ชัดเต็มตา 1080p/4K)</option>
+                </select>
               </div>
-            </div>
 
-            <!-- Card Background Opacity -->
-            <div class="form-group">
-              <label for="cardBgOpacitySelect">ความโปร่งใสพื้นหลัง (Glass Opacity)</label>
-              <select id="cardBgOpacitySelect" class="form-select">
-                <option value="0.94" selected>94% (กระจกมัว คมชัด สวยงาม - แนะนำ)</option>
-                <option value="0.85">85% (กระจกโปร่งแสงปานกลาง)</option>
-                <option value="0.70">70% (โปร่งแสงสูง เห็นภาพเกมด้านหลังชัด)</option>
-                <option value="1.0">100% (ทึบแสง ไม่โปร่งใส)</option>
-              </select>
-            </div>
-
-            <!-- Custom Card Border Color -->
-            <div class="form-group">
-              <label>สีเส้นขอบการ์ด (Card Border)</label>
-              <div class="color-picker-row">
-                <input type="color" id="cardBorderColorPicker" value="#c4b5fd" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="card-border-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;" title="Violet" aria-label="Violet"></button>
-                  <button type="button" class="card-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan" aria-label="Sky Cyan"></button>
-                  <button type="button" class="card-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Pink" aria-label="Rose Pink"></button>
-                  <button type="button" class="card-border-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald" aria-label="Emerald"></button>
-                  <button type="button" class="card-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold" aria-label="Gold"></button>
-                  <button type="button" class="card-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White" aria-label="White"></button>
-                </div>
+              <!-- Sound Alert Toggle -->
+              <div class="form-group">
+                <label>เสียงแจ้งเตือน</label>
+                <label class="toggle-label">
+                  <input type="checkbox" id="soundToggle" checked>
+                  <span>เล่นเสียงกริ่งเบาๆ เมื่อมีคนแลกแต้ม</span>
+                </label>
               </div>
-            </div>
-
-            <!-- Custom Card Glow Color -->
-            <div class="form-group">
-              <label>สีแสงนีออนเรืองรอบการ์ด (Glow / Neon Light)</label>
-              <div class="color-picker-row">
-                <input type="color" id="cardGlowColorPicker" value="#a855f7" class="color-picker">
-                <div class="color-presets">
-                  <button type="button" class="card-glow-chip" data-color="#a855f7" style="--chip-color: #a855f7;" title="Purple Glow" aria-label="Purple Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Cyan Glow" aria-label="Cyan Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Glow" aria-label="Rose Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#10b981" style="--chip-color: #10b981;" title="Green Glow" aria-label="Green Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#f59e0b" style="--chip-color: #f59e0b;" title="Amber Glow" aria-label="Amber Glow"></button>
-                  <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;" title="Subtle Slate" aria-label="Subtle Slate"></button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card Corner Radius -->
-            <div class="form-group">
-              <label for="cardRadiusSelect">ความโค้งมนของมุมการ์ด (Corner Radius)</label>
-              <select id="cardRadiusSelect" class="form-select">
-                <option value="4px">4px (เหลี่ยมคม สไตล์ Retro / FPS / Arcade)</option>
-                <option value="8px">8px (เหลี่ยมมนเล็กน้อย สไตล์ Sci-Fi)</option>
-                <option value="16px" selected>16px (โค้งมนมาตรฐาน - ค่าเริ่มต้น)</option>
-                <option value="24px">24px (โค้งมนมาก มินิมอล สมูท)</option>
-              </select>
-            </div>
-
-            <!-- Sound Alert Toggle -->
-            <div class="form-group">
-              <label>เสียงแจ้งเตือน</label>
-              <label class="toggle-label">
-                <input type="checkbox" id="soundToggle" checked>
-                <span>เล่นเสียงกริ่งเบาๆ เมื่อมีคนแลกแต้มคนแรก</span>
-              </label>
             </div>
           </div>
 
@@ -312,7 +419,9 @@
           <div class="whitelist-section">
             <label class="section-label">
               <span>รายการแต้มที่อนุญาตให้แสดง (Reward Whitelist)</span>
-              <span class="label-hint">💡 ค่าเริ่มต้น: หากปล่อยว่างไว้ ระบบจะอนุญาตให้แสดง<strong>ทุกแต้ม</strong>ที่แลกในสตรีม (หรือใส่ชื่อแต้มด้านล่างเพื่อจำกัดเฉพาะบางแต้ม)</span>
+              <span class="label-hint">💡 ค่าเริ่มต้น: หากปล่อยว่างไว้
+                ระบบจะอนุญาตให้แสดง<strong>ทุกแต้ม</strong>ที่แลกในสตรีม
+                (หรือใส่ชื่อแต้มด้านล่างเพื่อจำกัดเฉพาะบางแต้ม)</span>
             </label>
 
             <!-- Tags Container -->
@@ -320,7 +429,8 @@
 
             <!-- Add Tag Input -->
             <div class="add-tag-row">
-              <input type="text" id="newTagInput" placeholder="พิมพ์ชื่อแต้มที่ต้องการ เช่น คนแรก แล้วกด Enter หรือคลิกเพิ่ม">
+              <input type="text" id="newTagInput"
+                placeholder="พิมพ์ชื่อแต้มที่ต้องการ เช่น คนแรก แล้วกด Enter หรือคลิกเพิ่ม">
               <button type="button" id="addTagBtn" class="btn btn-secondary">
                 + เพิ่มแต้ม
               </button>
@@ -330,7 +440,8 @@
             <div class="twitch-rewards-container" id="twitchRewardsContainer">
               <div class="twitch-rewards-header">
                 <span class="twitch-rewards-title">แต้มจากช่อง Twitch ของคุณ (คลิกเพื่อเพิ่ม/ลบจาก Whitelist):</span>
-                <button type="button" id="fetchTwitchRewardsBtn" class="btn btn-sm btn-secondary">🔄 โหลดแต้มจาก Twitch</button>
+                <button type="button" id="fetchTwitchRewardsBtn" class="btn btn-sm btn-secondary">🔄 โหลดแต้มจาก
+                  Twitch</button>
               </div>
               <div id="twitchRewardsList" class="twitch-rewards-list">
                 <span class="hint-text">คลิก "โหลดแต้มจาก Twitch" เพื่อเลือกแต้มในช่องของคุณ</span>
@@ -363,10 +474,12 @@
             <div class="card-glow"></div>
             <div class="card-content-row">
               <span class="user-chunk">
-                <span class="prefix-at">@</span><span id="previewViewer" class="viewer-name">ViewerName</span>
+                <span class="prefix-at" id="previewPrefixAt">@</span><span id="previewViewer"
+                  class="viewer-name">ViewerName</span>
               </span>
               <span class="reward-chunk">
-                <span class="prefix-hash">#</span><span id="previewRewardTitle" class="reward-title">แต้มแรกของวัน</span>
+                <span class="prefix-hash" id="previewPrefixHash">#</span><span id="previewRewardTitle"
+                  class="reward-title">แต้มแรกของวัน</span>
               </span>
             </div>
           </div>
@@ -381,7 +494,15 @@
     </main>
   </div>
 
+  <!-- Bottom Nav / Footer Credit -->
+  <footer class="app-credit-footer">
+    <p class="credit-text">
+      made by <a href="https://twitch.tv/remem3er_" target="_blank" rel="noopener noreferrer"
+        class="credit-author">@remem3er_</a>
+    </p>
+  </footer>
+
   <script src="index.js"></script>
 </body>
-</html>
 
+</html>
