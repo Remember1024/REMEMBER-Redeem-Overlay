@@ -157,6 +157,46 @@
           <!-- Hidden compatibility field -->
           <input type="hidden" id="badgeTextInput" value="👑 1ST REDEEMER">
 
+          <!-- Section 0: Text Content & Prefix Customization -->
+          <div class="settings-subgroup">
+            <h3 class="subgroup-title">✏️ ปรับแต่งข้อความ &amp; สัญลักษณ์ (# หรือ คำด้านหลัง)</h3>
+            <div class="settings-grid">
+              <!-- Prefix Symbol -->
+              <div class="form-group">
+                <label for="rewardPrefixInput">สัญลักษณ์นำหน้า (Prefix Symbol)</label>
+                <div class="prefix-input-row">
+                  <input type="text" id="rewardPrefixInput" class="form-input" value="#" maxlength="10" placeholder="เช่น # หรือ 👑 หรือเว้นว่าง">
+                  <div class="prefix-presets">
+                    <button type="button" class="btn-preset-prefix" data-prefix="#">#</button>
+                    <button type="button" class="btn-preset-prefix" data-prefix="👑">👑</button>
+                    <button type="button" class="btn-preset-prefix" data-prefix="✨">✨</button>
+                    <button type="button" class="btn-preset-prefix" data-prefix="🏆">🏆</button>
+                    <button type="button" class="btn-preset-prefix" data-prefix="">🚫 ว่าง</button>
+                  </div>
+                </div>
+                <span class="hint-text">เลือกหรือพิมพ์สัญลักษณ์หน้าแต้ม (เช่น # หรือ 👑 หรือกด "ว่าง" เพื่อไม่ใส่)</span>
+              </div>
+
+              <!-- Reward Text Mode -->
+              <div class="form-group">
+                <label for="rewardTextModeSelect">รูปแบบข้อความแสดงผล (Display Text Mode)</label>
+                <select id="rewardTextModeSelect" class="form-select">
+                  <option value="twitch" selected>🏷️ แสดงชื่อแต้มจาก Twitch (เช่น # กระผมมาเป็นคนแรกเลยนะ)</option>
+                  <option value="custom">👑 แสดงข้อความกำหนดเอง (เช่น 👑 1ST REDEEMER หรือ คนแรกของสตรีม!)</option>
+                  <option value="both">✨ แสดงข้อความกำหนดเอง + ชื่อแต้ม (เช่น 👑 1ST REDEEMER • กระผมมาเป็นคนแรกเลยนะ)</option>
+                </select>
+                <span class="hint-text">เลือกว่าจะให้แสดงชื่อแต้ม หรือข้อความที่คุณระบุเอง</span>
+              </div>
+
+              <!-- Custom Text Input -->
+              <div id="customTextGroup" class="form-group form-group-full">
+                <label for="customRewardTextInput">ข้อความกำหนดเอง (Custom Text / Badge)</label>
+                <input type="text" id="customRewardTextInput" class="form-input" value="👑 1ST REDEEMER" placeholder="เช่น 👑 1ST REDEEMER หรือ คนแรกของสตรีม!">
+                <span class="hint-text">ข้อความที่จะนำมาแสดงเมื่อเลือกโหมดกำหนดเอง (รองรับการใส่ {reward} เพื่อดึงชื่อแต้ม Twitch มาร่วมด้วย)</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Section 1: Colors for Text & Symbols -->
           <div class="settings-subgroup">
             <h3 class="subgroup-title">🔤 สีตัวอักษร &amp; สัญลักษณ์</h3>

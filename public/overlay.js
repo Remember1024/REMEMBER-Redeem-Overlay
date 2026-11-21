@@ -11,6 +11,8 @@
   let pollingTimer = null;
   let lastMessageTime = Date.now();
   let currentRedemptionId = null;
+  let currentRedemptionData = null;
+  const rewardPrefixEl = document.getElementById('rewardPrefix');
 
   const PING_INTERVAL_MS = 15000; // Send PING every 15s to keep Cloud Run / reverse proxies alive
   const WATCHDOG_TIMEOUT_MS = 35000; // Reconnect if no message/pong received in 35s
@@ -37,6 +39,9 @@
     cardGlowColor: '#a855f7',
     cardRadius: '16px',
     soundEnabled: true,
+    rewardPrefix: '#',
+    rewardTextMode: 'twitch',
+    customRewardText: '👑 1ST REDEEMER',
   };
 
   const THEME_PRESETS = {
@@ -320,6 +325,28 @@
       cardElement.style.setProperty('--card-glow-shadow', 'none');
       cardElement.style.setProperty('--card-glow-ambient', 'transparent');
     }
+
+    // Prefix & Custom Reward text re-render on active display
+    const prefix = currentUser.rewardPrefix !== undefined && currentUser.rewardPrefix !== null ? currentUser.rewardPrefix : '#';
+    if (rewardPrefixEl) {
+      rewardPrefixEl.textContent = prefix;
+      rewardPrefixEl.style.display = prefix ? 'inline' : 'none';
+    }
+    if (currentRedemptionData && rewardTitleEl) {
+      rewardTitleEl.textContent = formatRewardTitle(currentRedemptionData.rewardTitle);
+    }
+  }
+
+  function formatRewardTitle(twitchTitle) {
+    const raw = twitchTitle || 'Reward';
+    const mode = currentUser.rewardTextMode || 'twitch';
+    const customText = currentUser.customRewardText || currentUser.badgeText || '👑 1ST REDEEMER';
+    if (mode === 'custom') {
+      return customText.replace('{reward}', raw);
+    } else if (mode === 'both') {
+      return `${customText} • ${raw}`;
+    }
+    return raw;
   }
 
   function applyTheme(theme) {
@@ -331,9 +358,17 @@
   function displayRedemption(redemption, animatePulse = true) {
     if (!redemption) return;
 
+    currentRedemptionData = redemption;
     currentRedemptionId = redemption.id || `${redemption.userName}_${redemption.redeemedAt}`;
     const displayName = redemption.displayName || redemption.userName || 'Viewer';
-    const rewardTitle = redemption.rewardTitle || 'Reward';
+    const rewardTitle = formatRewardTitle(redemption.rewardTitle);
+
+    // Prefix handling
+    const prefix = currentUser.rewardPrefix !== undefined && currentUser.rewardPrefix !== null ? currentUser.rewardPrefix : '#';
+    if (rewardPrefixEl) {
+      rewardPrefixEl.textContent = prefix;
+      rewardPrefixEl.style.display = prefix ? 'inline' : 'none';
+    }
 
     // Safe rendering with textContent
     if (viewerNameEl) viewerNameEl.textContent = displayName;
@@ -364,6 +399,7 @@
 
   function hideRedemption() {
     currentRedemptionId = null;
+    currentRedemptionData = null;
     cardElement.classList.add('hidden');
   }
 

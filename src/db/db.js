@@ -53,6 +53,9 @@ db.exec(`
     bloom_enabled INTEGER DEFAULT 1,
     shadow_enabled INTEGER DEFAULT 1,
     card_shadow_color TEXT DEFAULT '#000000',
+    reward_prefix TEXT DEFAULT '#',
+    reward_text_mode TEXT DEFAULT 'twitch',
+    custom_reward_text TEXT DEFAULT '👑 1ST REDEEMER',
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );
@@ -93,6 +96,9 @@ try { db.exec("ALTER TABLE users ADD COLUMN border_enabled INTEGER DEFAULT 1;");
 try { db.exec("ALTER TABLE users ADD COLUMN bloom_enabled INTEGER DEFAULT 1;"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN shadow_enabled INTEGER DEFAULT 1;"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN card_shadow_color TEXT DEFAULT '#000000';"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN reward_prefix TEXT DEFAULT '#';"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN reward_text_mode TEXT DEFAULT 'twitch';"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN custom_reward_text TEXT DEFAULT '👑 1ST REDEEMER';"); } catch {}
 
 // Safe migration: Reset untouched legacy default whitelist to empty ([]) so all rewards are allowed by default
 try {
@@ -201,6 +207,9 @@ export const userRepo = {
     bloomEnabled,
     shadowEnabled,
     cardShadowColor,
+    rewardPrefix,
+    rewardTextMode,
+    customRewardText,
   }) {
     const now = new Date().toISOString();
     const cleanWords = Array.isArray(whitelistWords) 
@@ -233,6 +242,9 @@ export const userRepo = {
         bloom_enabled = COALESCE(?, bloom_enabled),
         shadow_enabled = COALESCE(?, shadow_enabled),
         card_shadow_color = COALESCE(?, card_shadow_color),
+        reward_prefix = COALESCE(?, reward_prefix),
+        reward_text_mode = COALESCE(?, reward_text_mode),
+        custom_reward_text = COALESCE(?, custom_reward_text),
         updated_at = ?
       WHERE id = ?
     `);
@@ -262,6 +274,9 @@ export const userRepo = {
       bloomEnabled !== undefined ? (bloomEnabled ? 1 : 0) : null,
       shadowEnabled !== undefined ? (shadowEnabled ? 1 : 0) : null,
       cardShadowColor !== undefined ? String(cardShadowColor).trim() : null,
+      rewardPrefix !== undefined ? String(rewardPrefix) : null,
+      rewardTextMode !== undefined ? String(rewardTextMode).trim() : null,
+      customRewardText !== undefined ? String(customRewardText).trim() : (badgeText !== undefined ? String(badgeText).trim() : null),
       now,
       userId
     );

@@ -20,6 +20,9 @@
   // Settings
   const settingsForm = document.getElementById('settingsForm');
   const badgeTextInput = document.getElementById('badgeTextInput');
+  const rewardPrefixInput = document.getElementById('rewardPrefixInput');
+  const rewardTextModeSelect = document.getElementById('rewardTextModeSelect');
+  const customRewardTextInput = document.getElementById('customRewardTextInput');
   const atColorPicker = document.getElementById('atColorPicker');
   const viewerColorPicker = document.getElementById('viewerColorPicker');
   const hashColorPicker = document.getElementById('hashColorPicker');
@@ -136,6 +139,9 @@
     updateOverlayUrl(currentUser.overlayToken);
 
     if (badgeTextInput) badgeTextInput.value = currentUser.badgeText || '👑 1ST REDEEMER';
+    if (rewardPrefixInput) rewardPrefixInput.value = currentUser.rewardPrefix !== undefined && currentUser.rewardPrefix !== null ? currentUser.rewardPrefix : '#';
+    if (rewardTextModeSelect) rewardTextModeSelect.value = currentUser.rewardTextMode || 'twitch';
+    if (customRewardTextInput) customRewardTextInput.value = currentUser.customRewardText || currentUser.badgeText || '👑 1ST REDEEMER';
     if (atColorPicker) atColorPicker.value = currentUser.atColor || currentUser.badgeColor || '#fbbf24';
     if (viewerColorPicker) viewerColorPicker.value = currentUser.viewerColor || '#ffffff';
     if (hashColorPicker) hashColorPicker.value = currentUser.hashColor || currentUser.cardBorderColor || '#c4b5fd';
@@ -361,7 +367,18 @@
   }
   if (cardRadiusSelect) cardRadiusSelect.addEventListener('change', onCustomCardStyleChange);
 
-  // Real-time preview updates for text and colors
+  // Real-time preview updates for text, prefix, modes and colors
+  document.querySelectorAll('.btn-preset-prefix').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const p = btn.getAttribute('data-prefix');
+      if (rewardPrefixInput) rewardPrefixInput.value = p;
+      updateLivePreview();
+    });
+  });
+
+  if (rewardPrefixInput) rewardPrefixInput.addEventListener('input', updateLivePreview);
+  if (rewardTextModeSelect) rewardTextModeSelect.addEventListener('change', updateLivePreview);
+  if (customRewardTextInput) customRewardTextInput.addEventListener('input', updateLivePreview);
   if (atColorPicker) atColorPicker.addEventListener('input', updateLivePreview);
   if (viewerColorPicker) viewerColorPicker.addEventListener('input', updateLivePreview);
   if (hashColorPicker) hashColorPicker.addEventListener('input', updateLivePreview);
@@ -377,6 +394,11 @@
     const fontFamily = fontFamilySelect?.value || 'Kanit';
     const fontScale = fontSizeScaleSelect?.value || '1.0';
     const theme = cardThemeSelect?.value || 'purple';
+
+    const prefix = rewardPrefixInput?.value !== undefined ? rewardPrefixInput.value : '#';
+    const mode = rewardTextModeSelect?.value || 'twitch';
+    const customText = customRewardTextInput?.value?.trim() || '👑 1ST REDEEMER';
+    const sampleReward = currentWhitelist.length > 0 ? currentWhitelist[0] : 'แต้มตัวอย่าง (Channel Point)';
 
     const bgColor = cardBgColorPicker?.value || '#1c1030';
     const bgOpacity = parseFloat(cardBgOpacitySelect?.value ?? '0.94');
@@ -451,15 +473,26 @@
     // Direct text styling on preview spans
     if (previewPrefixAt) previewPrefixAt.style.color = atColor;
     if (previewViewer) previewViewer.style.color = viewerColor;
-    if (previewPrefixHash) previewPrefixHash.style.color = hashColor;
+    if (previewPrefixHash) {
+      previewPrefixHash.textContent = prefix;
+      previewPrefixHash.style.color = hashColor;
+      previewPrefixHash.style.display = prefix ? 'inline' : 'none';
+    }
     if (previewRewardTitle) previewRewardTitle.style.color = rewardColor;
 
     previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled || borderColor === 'transparent' ? ' no-border' : ''}${!isBloomEnabled || glowColor === 'transparent' ? ' no-bloom' : ''}${!isShadowEnabled || shadowColor === 'transparent' ? ' no-shadow' : ''}${bgOpacity === 0 ? ' transparent-bg' : ''}`;
 
-    if (currentWhitelist.length > 0) {
-      previewRewardTitle.textContent = currentWhitelist[0];
+    let displayTitle = sampleReward;
+    if (mode === 'custom') {
+      displayTitle = customText.replace('{reward}', sampleReward);
+    } else if (mode === 'both') {
+      displayTitle = `${customText} • ${sampleReward}`;
     } else {
-      previewRewardTitle.textContent = 'แต้มตัวอย่าง (Channel Point)';
+      displayTitle = sampleReward;
+    }
+
+    if (previewRewardTitle) {
+      previewRewardTitle.textContent = displayTitle;
     }
   }
 
@@ -519,6 +552,9 @@
       bloomEnabled: isBloomEnabled,
       shadowEnabled: isShadowEnabled,
       cardShadowColor: shadowColor,
+      rewardPrefix: rewardPrefixInput?.value !== undefined ? rewardPrefixInput.value : '#',
+      rewardTextMode: rewardTextModeSelect?.value || 'twitch',
+      customRewardText: customRewardTextInput?.value?.trim() || '👑 1ST REDEEMER',
       cardTheme: cardThemeSelect?.value || 'purple',
       cardBgColor: cardBgColorPicker?.value || '#1c1030',
       cardBgOpacity: parseFloat(cardBgOpacitySelect?.value || '0.94'),

@@ -425,6 +425,51 @@ input[type="text"]:focus,
   padding-top: 6px;
 }
 
+/* Prefix Symbol & Custom Text styles */
+.prefix-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prefix-input-row .form-input {
+  max-width: 90px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.prefix-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-preset-prefix {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-preset-prefix:hover,
+.btn-preset-prefix.active {
+  background: rgba(145, 70, 255, 0.35);
+  border-color: #a855f7;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
 /* Whitelist Section */
 .whitelist-section {
   border-top: 1px solid var(--border-subtle);

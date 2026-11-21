@@ -93,6 +93,9 @@ async function runAsyncTest(description, fn) {
       bloomEnabled: false,
       shadowEnabled: false,
       cardShadowColor: 'transparent',
+      rewardPrefix: '👑',
+      rewardTextMode: 'custom',
+      customRewardText: 'คนแรกของสตรีม!',
     });
 
     assert.strictEqual(updatedUser1.badge_text, '✨ ผู้เปิดพิธี');
@@ -115,6 +118,9 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(updatedUser1.bloom_enabled, 0);
     assert.strictEqual(updatedUser1.shadow_enabled, 0);
     assert.strictEqual(updatedUser1.card_shadow_color, 'transparent');
+    assert.strictEqual(updatedUser1.reward_prefix, '👑');
+    assert.strictEqual(updatedUser1.reward_text_mode, 'custom');
+    assert.strictEqual(updatedUser1.custom_reward_text, 'คนแรกของสตรีม!');
     assert.deepStrictEqual(JSON.parse(updatedUser1.whitelist_words), ['รักแรกมันแยกยาก', 'แต้มพิเศษประจำวัน']);
 
     // Verify User 2 remains untouched
@@ -132,6 +138,9 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(freshUser2.bloom_enabled, 1);
     assert.strictEqual(freshUser2.shadow_enabled, 1);
     assert.strictEqual(freshUser2.card_shadow_color, '#000000');
+    assert.strictEqual(freshUser2.reward_prefix, '#');
+    assert.strictEqual(freshUser2.reward_text_mode, 'twitch');
+    assert.strictEqual(freshUser2.custom_reward_text, '👑 1ST REDEEMER');
   });
 
   // Test 3: Session Stream Start & 1st Redeemer Order
