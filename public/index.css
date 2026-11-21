@@ -388,7 +388,8 @@ input[type="text"]:focus,
 .viewer-color-chip,
 .card-bg-chip,
 .card-border-chip,
-.card-glow-chip {
+.card-glow-chip,
+.card-shadow-chip {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -408,7 +409,8 @@ input[type="text"]:focus,
 .viewer-color-chip:hover,
 .card-bg-chip:hover,
 .card-border-chip:hover,
-.card-glow-chip:hover {
+.card-glow-chip:hover,
+.card-shadow-chip:hover {
   transform: scale(1.15);
   border-color: #fff;
 }
@@ -586,7 +588,12 @@ input[type="text"]:focus,
   width: auto;
   overflow: hidden;
   white-space: nowrap;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 25px -2px var(--card-glow, rgba(167, 139, 250, 0.28));
+  box-shadow:
+    var(--card-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.6)),
+    var(--card-glow-shadow, 0 0 25px -2px var(--card-glow, rgba(167, 139, 250, 0.28))),
+    var(--card-inset, inset 0 1px 0 rgba(255, 255, 255, 0.15));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -596,9 +603,20 @@ input[type="text"]:focus,
   border-width: 0 !important;
 }
 
+/* Shadow disabled / transparent state */
+.redeem-card.no-shadow {
+  --card-shadow: none !important;
+  --card-inset: none !important;
+}
+
+.redeem-card.no-shadow .viewer-name,
+.redeem-card.no-shadow .reward-title {
+  text-shadow: none !important;
+}
+
 /* Bloom / Glow disabled state */
 .redeem-card.no-bloom {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  --card-glow-shadow: none !important;
 }
 
 .redeem-card.no-bloom .card-glow {
@@ -609,6 +627,17 @@ input[type="text"]:focus,
 .redeem-card.no-bloom .prefix-at,
 .redeem-card.no-bloom .prefix-hash {
   text-shadow: none !important;
+}
+
+/* Both Bloom & Shadow disabled / transparent */
+.redeem-card.no-shadow.no-bloom {
+  box-shadow: none !important;
+}
+
+/* Background transparent (0% opacity) */
+.redeem-card.transparent-bg {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .card-glow {
@@ -737,9 +766,9 @@ input[type="text"]:focus,
 .redeem-card.first-redeemer {
   border-color: var(--card-border, #fbbf24);
   box-shadow:
-    0 10px 30px -5px rgba(0, 0, 0, 0.6),
-    0 0 28px var(--card-glow, rgba(245, 158, 11, 0.45)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    var(--card-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.6)),
+    var(--card-glow-shadow, 0 0 28px var(--card-glow, rgba(245, 158, 11, 0.45))),
+    var(--card-inset, inset 0 1px 0 rgba(255, 255, 255, 0.25));
 }
 
 .redeem-card.first-redeemer.no-border {
@@ -747,8 +776,17 @@ input[type="text"]:focus,
   border-width: 0 !important;
 }
 
+.redeem-card.first-redeemer.no-shadow {
+  --card-shadow: none !important;
+  --card-inset: none !important;
+}
+
 .redeem-card.first-redeemer.no-bloom {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  --card-glow-shadow: none !important;
+}
+
+.redeem-card.first-redeemer.no-shadow.no-bloom {
+  box-shadow: none !important;
 }
 
 .redeem-card.first-redeemer .prefix-at {
@@ -945,7 +983,8 @@ input[type="text"]:focus,
 
 /* Transparent Preset Chips */
 .card-border-chip.chip-transparent,
-.card-glow-chip.chip-transparent {
+.card-glow-chip.chip-transparent,
+.card-shadow-chip.chip-transparent {
   position: relative;
   background: repeating-conic-gradient(#334155 0% 25%, #1e293b 0% 50%) 50% / 8px 8px !important;
   border: 1px dashed rgba(255, 255, 255, 0.5) !important;
@@ -955,7 +994,8 @@ input[type="text"]:focus,
 }
 
 .card-border-chip.chip-transparent::after,
-.card-glow-chip.chip-transparent::after {
+.card-glow-chip.chip-transparent::after,
+.card-shadow-chip.chip-transparent::after {
   content: '✕';
   font-size: 11px;
   color: #f43f5e;

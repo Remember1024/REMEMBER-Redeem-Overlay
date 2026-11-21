@@ -28,6 +28,8 @@
     rewardColor: '#ffffff',
     borderEnabled: true,
     bloomEnabled: true,
+    shadowEnabled: true,
+    cardShadowColor: '#000000',
     cardTheme: 'purple',
     cardBgColor: '#1c1030',
     cardBgOpacity: 0.94,
@@ -263,14 +265,18 @@
       : (preset?.opacity ?? 0.94);
     const borderColor = currentUser.cardBorderColor || preset?.border || '#c4b5fd';
     const glowColor = currentUser.cardGlowColor || preset?.glow || '#a855f7';
+    const shadowColor = currentUser.cardShadowColor || '#000000';
     const radius = currentUser.cardRadius || preset?.radius || '16px';
 
     const isBorderEnabled = currentUser.borderEnabled !== false && borderColor !== 'transparent';
     const isBloomEnabled = currentUser.bloomEnabled !== false && glowColor !== 'transparent';
+    const isShadowEnabled = currentUser.shadowEnabled !== false && shadowColor !== 'transparent';
 
     if (bgOpacity === 0) {
       cardElement.style.setProperty('--card-bg', 'transparent');
+      cardElement.classList.add('transparent-bg');
     } else {
+      cardElement.classList.remove('transparent-bg');
       const bgRgba = hexToRgba(bgColor, bgOpacity);
       const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
       cardElement.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
@@ -288,16 +294,30 @@
       cardElement.style.setProperty('--card-border', 'transparent');
     }
 
+    // Shadow handling
+    if (isShadowEnabled) {
+      cardElement.classList.remove('no-shadow');
+      const shadowRgba = shadowColor === 'transparent' ? 'transparent' : hexToRgba(shadowColor, 0.6);
+      cardElement.style.setProperty('--card-shadow', `0 10px 30px -5px ${shadowRgba}`);
+      cardElement.style.setProperty('--card-inset', 'inset 0 1px 0 rgba(255, 255, 255, 0.15)');
+    } else {
+      cardElement.classList.add('no-shadow');
+      cardElement.style.setProperty('--card-shadow', 'none');
+      cardElement.style.setProperty('--card-inset', 'none');
+    }
+
     // Bloom / Glow handling
     if (isBloomEnabled) {
       cardElement.classList.remove('no-bloom');
       const glowBoxRgba = glowColor === 'transparent' ? 'transparent' : hexToRgba(glowColor, 0.28);
       const glowAmbientRgba = glowColor === 'transparent' ? 'transparent' : hexToRgba(glowColor, 0.35);
       cardElement.style.setProperty('--card-glow', glowBoxRgba);
+      cardElement.style.setProperty('--card-glow-shadow', `0 0 25px -2px ${glowBoxRgba}`);
       cardElement.style.setProperty('--card-glow-ambient', glowAmbientRgba);
     } else {
       cardElement.classList.add('no-bloom');
       cardElement.style.setProperty('--card-glow', 'transparent');
+      cardElement.style.setProperty('--card-glow-shadow', 'none');
       cardElement.style.setProperty('--card-glow-ambient', 'transparent');
     }
   }

@@ -51,6 +51,8 @@ db.exec(`
     reward_color TEXT DEFAULT '#ffffff',
     border_enabled INTEGER DEFAULT 1,
     bloom_enabled INTEGER DEFAULT 1,
+    shadow_enabled INTEGER DEFAULT 1,
+    card_shadow_color TEXT DEFAULT '#000000',
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );
@@ -89,6 +91,8 @@ try { db.exec("ALTER TABLE users ADD COLUMN hash_color TEXT DEFAULT '#c4b5fd';")
 try { db.exec("ALTER TABLE users ADD COLUMN reward_color TEXT DEFAULT '#ffffff';"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN border_enabled INTEGER DEFAULT 1;"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN bloom_enabled INTEGER DEFAULT 1;"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN shadow_enabled INTEGER DEFAULT 1;"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN card_shadow_color TEXT DEFAULT '#000000';"); } catch {}
 
 // Safe migration: Reset untouched legacy default whitelist to empty ([]) so all rewards are allowed by default
 try {
@@ -195,6 +199,8 @@ export const userRepo = {
     rewardColor,
     borderEnabled,
     bloomEnabled,
+    shadowEnabled,
+    cardShadowColor,
   }) {
     const now = new Date().toISOString();
     const cleanWords = Array.isArray(whitelistWords) 
@@ -225,6 +231,8 @@ export const userRepo = {
         reward_color = COALESCE(?, reward_color),
         border_enabled = COALESCE(?, border_enabled),
         bloom_enabled = COALESCE(?, bloom_enabled),
+        shadow_enabled = COALESCE(?, shadow_enabled),
+        card_shadow_color = COALESCE(?, card_shadow_color),
         updated_at = ?
       WHERE id = ?
     `);
@@ -252,6 +260,8 @@ export const userRepo = {
       rewardColor !== undefined ? String(rewardColor).trim() : null,
       borderEnabled !== undefined ? (borderEnabled ? 1 : 0) : null,
       bloomEnabled !== undefined ? (bloomEnabled ? 1 : 0) : null,
+      shadowEnabled !== undefined ? (shadowEnabled ? 1 : 0) : null,
+      cardShadowColor !== undefined ? String(cardShadowColor).trim() : null,
       now,
       userId
     );

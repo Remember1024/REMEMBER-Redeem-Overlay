@@ -251,9 +251,9 @@
             </div>
           </div>
 
-          <!-- Section 2: Card Appearance, Border & Bloom -->
+          <!-- Section 2: Card Appearance, Border, Bloom & Shadow -->
           <div class="settings-subgroup">
-            <h3 class="subgroup-title">🎨 การ์ด, เส้นขอบ &amp; แสงเรือง Bloom</h3>
+            <h3 class="subgroup-title">🎨 การ์ด, เส้นขอบ, แสง Bloom &amp; เงา Shadow</h3>
             <div class="settings-grid">
               <!-- Card Theme Preset Selector -->
               <div class="form-group">
@@ -370,6 +370,34 @@
                       title="Amber Glow" aria-label="Amber Glow"></button>
                     <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;"
                       title="Subtle Slate" aria-label="Subtle Slate"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Shadow Toggle & Color -->
+              <div class="form-group form-group-toggleable">
+                <div class="label-with-toggle">
+                  <label for="cardShadowColorPicker">เงาตกกระทบการ์ด (Card Shadow)</label>
+                  <label class="switch-inline">
+                    <input type="checkbox" id="shadowToggle" checked>
+                    <span class="switch-text">เปิดเงา Shadow</span>
+                  </label>
+                </div>
+                <div id="shadowControlsContainer" class="color-picker-row">
+                  <input type="color" id="cardShadowColorPicker" value="#000000" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="card-shadow-chip chip-transparent" data-color="transparent"
+                      title="🚫 ไม่มีเงา (Transparent)" aria-label="Transparent"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#000000" style="--chip-color: #000000;"
+                      title="Deep Black" aria-label="Deep Black"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#1e1b4b" style="--chip-color: #1e1b4b;"
+                      title="Midnight Dark" aria-label="Midnight Dark"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#4c1d95" style="--chip-color: #4c1d95;"
+                      title="Deep Violet" aria-label="Deep Violet"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#0f172a" style="--chip-color: #0f172a;"
+                      title="Slate Dark" aria-label="Slate Dark"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#450a0a" style="--chip-color: #450a0a;"
+                      title="Crimson Dark" aria-label="Crimson Dark"></button>
                   </div>
                 </div>
               </div>

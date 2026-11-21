@@ -36,9 +36,9 @@ body {
   border: 1px solid var(--card-border, rgba(196, 181, 253, 0.28));
   border-radius: var(--card-radius, 16px);
   box-shadow:
-    0 10px 30px -5px rgba(0, 0, 0, 0.6),
-    0 0 25px -2px var(--card-glow, rgba(167, 139, 250, 0.28)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    var(--card-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.6)),
+    var(--card-glow-shadow, 0 0 25px -2px var(--card-glow, rgba(167, 139, 250, 0.28))),
+    var(--card-inset, inset 0 1px 0 rgba(255, 255, 255, 0.15));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: 10px 24px;
@@ -58,9 +58,20 @@ body {
   border-width: 0 !important;
 }
 
+/* Shadow disabled / transparent state */
+.redeem-card.no-shadow {
+  --card-shadow: none !important;
+  --card-inset: none !important;
+}
+
+.redeem-card.no-shadow .viewer-name,
+.redeem-card.no-shadow .reward-title {
+  text-shadow: none !important;
+}
+
 /* Bloom / Glow disabled state */
 .redeem-card.no-bloom {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  --card-glow-shadow: none !important;
 }
 
 .redeem-card.no-bloom .card-glow {
@@ -71,6 +82,17 @@ body {
 .redeem-card.no-bloom .prefix-at,
 .redeem-card.no-bloom .prefix-hash {
   text-shadow: none !important;
+}
+
+/* Both Bloom & Shadow transparent / disabled */
+.redeem-card.no-shadow.no-bloom {
+  box-shadow: none !important;
+}
+
+/* Background transparent (0% opacity) */
+.redeem-card.transparent-bg {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .redeem-card.theme-purple {
@@ -207,9 +229,9 @@ body {
 .redeem-card.first-redeemer {
   border-color: var(--card-border, #fbbf24);
   box-shadow:
-    0 10px 30px -5px rgba(0, 0, 0, 0.6),
-    0 0 28px var(--card-glow, rgba(245, 158, 11, 0.45)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    var(--card-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.6)),
+    var(--card-glow-shadow, 0 0 28px var(--card-glow, rgba(245, 158, 11, 0.45))),
+    var(--card-inset, inset 0 1px 0 rgba(255, 255, 255, 0.25));
 }
 
 .redeem-card.first-redeemer.no-border {
@@ -217,8 +239,17 @@ body {
   border-width: 0 !important;
 }
 
+.redeem-card.first-redeemer.no-shadow {
+  --card-shadow: none !important;
+  --card-inset: none !important;
+}
+
 .redeem-card.first-redeemer.no-bloom {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  --card-glow-shadow: none !important;
+}
+
+.redeem-card.first-redeemer.no-shadow.no-bloom {
+  box-shadow: none !important;
 }
 
 .redeem-card.first-redeemer .prefix-at {

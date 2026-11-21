@@ -33,6 +33,8 @@
   const cardBorderColorPicker = document.getElementById('cardBorderColorPicker');
   const bloomToggle = document.getElementById('bloomToggle');
   const cardGlowColorPicker = document.getElementById('cardGlowColorPicker');
+  const shadowToggle = document.getElementById('shadowToggle');
+  const cardShadowColorPicker = document.getElementById('cardShadowColorPicker');
   const cardRadiusSelect = document.getElementById('cardRadiusSelect');
   const soundToggle = document.getElementById('soundToggle');
   const whitelistTagsContainer = document.getElementById('whitelistTagsContainer');
@@ -66,12 +68,12 @@
   let cachedTwitchRewards = [];
 
   const THEME_PRESETS = {
-    purple: { bg: '#1c1030', opacity: '0.94', border: '#c4b5fd', glow: '#a855f7', radius: '16px' },
-    midnight: { bg: '#0f172a', opacity: '0.95', border: '#38bdf8', glow: '#38bdf8', radius: '16px' },
-    cyberpunk: { bg: '#18181b', opacity: '0.95', border: '#f43f5e', glow: '#f43f5e', radius: '8px' },
-    emerald: { bg: '#022c22', opacity: '0.94', border: '#34d399', glow: '#10b981', radius: '16px' },
-    sunset: { bg: '#271406', opacity: '0.94', border: '#fbbf24', glow: '#f59e0b', radius: '16px' },
-    stealth: { bg: '#09090b', opacity: '0.98', border: '#475569', glow: '#64748b', radius: '12px' },
+    purple: { bg: '#1c1030', opacity: '0.94', border: '#c4b5fd', glow: '#a855f7', shadow: '#000000', radius: '16px' },
+    midnight: { bg: '#0f172a', opacity: '0.95', border: '#38bdf8', glow: '#38bdf8', shadow: '#0f172a', radius: '16px' },
+    cyberpunk: { bg: '#18181b', opacity: '0.95', border: '#f43f5e', glow: '#f43f5e', shadow: '#000000', radius: '8px' },
+    emerald: { bg: '#022c22', opacity: '0.94', border: '#34d399', glow: '#10b981', shadow: '#022c22', radius: '16px' },
+    sunset: { bg: '#271406', opacity: '0.94', border: '#fbbf24', glow: '#f59e0b', shadow: '#271406', radius: '16px' },
+    stealth: { bg: '#09090b', opacity: '0.98', border: '#475569', glow: '#64748b', shadow: '#000000', radius: '12px' },
   };
 
   function hexToRgba(hex, alpha = 1.0) {
@@ -151,6 +153,10 @@
     const isBloomOn = currentUser.bloomEnabled !== false && currentUser.cardGlowColor !== 'transparent';
     if (bloomToggle) bloomToggle.checked = isBloomOn;
     if (cardGlowColorPicker) cardGlowColorPicker.value = (currentUser.cardGlowColor && currentUser.cardGlowColor !== 'transparent') ? currentUser.cardGlowColor : '#a855f7';
+
+    const isShadowOn = currentUser.shadowEnabled !== false && currentUser.cardShadowColor !== 'transparent';
+    if (shadowToggle) shadowToggle.checked = isShadowOn;
+    if (cardShadowColorPicker) cardShadowColorPicker.value = (currentUser.cardShadowColor && currentUser.cardShadowColor !== 'transparent') ? currentUser.cardShadowColor : '#000000';
 
     if (cardRadiusSelect) cardRadiusSelect.value = currentUser.cardRadius || '16px';
     if (soundToggle) soundToggle.checked = Boolean(currentUser.soundEnabled);
@@ -290,6 +296,20 @@
     });
   });
 
+  document.querySelectorAll('.card-shadow-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const color = chip.getAttribute('data-color');
+      if (color === 'transparent') {
+        if (shadowToggle) shadowToggle.checked = false;
+      } else {
+        if (shadowToggle) shadowToggle.checked = true;
+        if (cardShadowColorPicker) cardShadowColorPicker.value = color;
+      }
+      if (cardThemeSelect) cardThemeSelect.value = 'custom';
+      updateLivePreview();
+    });
+  });
+
   // Theme preset change
   cardThemeSelect.addEventListener('change', () => {
     const selectedTheme = cardThemeSelect.value;
@@ -301,6 +321,8 @@
       if (cardBorderColorPicker) cardBorderColorPicker.value = preset.border;
       if (bloomToggle) bloomToggle.checked = true;
       if (cardGlowColorPicker) cardGlowColorPicker.value = preset.glow;
+      if (shadowToggle) shadowToggle.checked = true;
+      if (cardShadowColorPicker) cardShadowColorPicker.value = preset.shadow || '#000000';
       if (cardRadiusSelect) cardRadiusSelect.value = preset.radius;
     }
     updateLivePreview();
@@ -330,6 +352,13 @@
       onCustomCardStyleChange();
     });
   }
+  if (shadowToggle) shadowToggle.addEventListener('change', onCustomCardStyleChange);
+  if (cardShadowColorPicker) {
+    cardShadowColorPicker.addEventListener('input', () => {
+      if (shadowToggle) shadowToggle.checked = true;
+      onCustomCardStyleChange();
+    });
+  }
   if (cardRadiusSelect) cardRadiusSelect.addEventListener('change', onCustomCardStyleChange);
 
   // Real-time preview updates for text and colors
@@ -355,6 +384,8 @@
     const borderColor = isBorderEnabled ? (cardBorderColorPicker?.value || '#c4b5fd') : 'transparent';
     const isBloomEnabled = Boolean(bloomToggle?.checked);
     const glowColor = isBloomEnabled ? (cardGlowColorPicker?.value || '#a855f7') : 'transparent';
+    const isShadowEnabled = Boolean(shadowToggle?.checked);
+    const shadowColor = isShadowEnabled ? (cardShadowColorPicker?.value || '#000000') : 'transparent';
     const radius = cardRadiusSelect?.value || '16px';
 
     previewCard.style.setProperty('--overlay-font', fontFamily);
@@ -370,7 +401,9 @@
     // Card background (handle transparent 0%)
     if (bgOpacity === 0) {
       previewCard.style.setProperty('--card-bg', 'transparent');
+      previewCard.classList.add('transparent-bg');
     } else {
+      previewCard.classList.remove('transparent-bg');
       const bgRgba = hexToRgba(bgColor, bgOpacity);
       const bgRgbaDark = hexToRgba(bgColor, Math.min(1.0, bgOpacity + 0.04));
       previewCard.style.setProperty('--card-bg', `linear-gradient(135deg, ${bgRgba} 0%, ${bgRgbaDark} 100%)`);
@@ -388,16 +421,30 @@
       previewCard.style.setProperty('--card-border', 'transparent');
     }
 
+    // Shadow handling
+    if (isShadowEnabled && shadowColor !== 'transparent') {
+      previewCard.classList.remove('no-shadow');
+      const shadowRgba = hexToRgba(shadowColor, 0.6);
+      previewCard.style.setProperty('--card-shadow', `0 10px 30px -5px ${shadowRgba}`);
+      previewCard.style.setProperty('--card-inset', 'inset 0 1px 0 rgba(255, 255, 255, 0.15)');
+    } else {
+      previewCard.classList.add('no-shadow');
+      previewCard.style.setProperty('--card-shadow', 'none');
+      previewCard.style.setProperty('--card-inset', 'none');
+    }
+
     // Bloom / Glow handling
     if (isBloomEnabled && glowColor !== 'transparent') {
       previewCard.classList.remove('no-bloom');
       const glowBoxRgba = hexToRgba(glowColor, 0.28);
       const glowAmbientRgba = hexToRgba(glowColor, 0.35);
       previewCard.style.setProperty('--card-glow', glowBoxRgba);
+      previewCard.style.setProperty('--card-glow-shadow', `0 0 25px -2px ${glowBoxRgba}`);
       previewCard.style.setProperty('--card-glow-ambient', glowAmbientRgba);
     } else {
       previewCard.classList.add('no-bloom');
       previewCard.style.setProperty('--card-glow', 'transparent');
+      previewCard.style.setProperty('--card-glow-shadow', 'none');
       previewCard.style.setProperty('--card-glow-ambient', 'transparent');
     }
 
@@ -407,7 +454,7 @@
     if (previewPrefixHash) previewPrefixHash.style.color = hashColor;
     if (previewRewardTitle) previewRewardTitle.style.color = rewardColor;
 
-    previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled ? ' no-border' : ''}${!isBloomEnabled ? ' no-bloom' : ''}`;
+    previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled || borderColor === 'transparent' ? ' no-border' : ''}${!isBloomEnabled || glowColor === 'transparent' ? ' no-bloom' : ''}${!isShadowEnabled || shadowColor === 'transparent' ? ' no-shadow' : ''}${bgOpacity === 0 ? ' transparent-bg' : ''}`;
 
     if (currentWhitelist.length > 0) {
       previewRewardTitle.textContent = currentWhitelist[0];
@@ -455,6 +502,8 @@
     const borderColor = isBorderEnabled ? (cardBorderColorPicker?.value || '#c4b5fd') : 'transparent';
     const isBloomEnabled = Boolean(bloomToggle?.checked);
     const glowColor = isBloomEnabled ? (cardGlowColorPicker?.value || '#a855f7') : 'transparent';
+    const isShadowEnabled = Boolean(shadowToggle?.checked);
+    const shadowColor = isShadowEnabled ? (cardShadowColorPicker?.value || '#000000') : 'transparent';
 
     const payload = {
       badgeText: badgeTextInput?.value?.trim() || '👑 1ST REDEEMER',
@@ -468,6 +517,8 @@
       rewardColor: rewardColorPicker?.value || '#ffffff',
       borderEnabled: isBorderEnabled,
       bloomEnabled: isBloomEnabled,
+      shadowEnabled: isShadowEnabled,
+      cardShadowColor: shadowColor,
       cardTheme: cardThemeSelect?.value || 'purple',
       cardBgColor: cardBgColorPicker?.value || '#1c1030',
       cardBgOpacity: parseFloat(cardBgOpacitySelect?.value || '0.94'),
