@@ -65,6 +65,13 @@ A complete, production-ready, **multi-user Web Application** for Twitch streamer
 
 ---
 
+## ☁️ Deploying to Google Cloud (Always Free VM / Cloud Run)
+
+- **100% Free For Life (GCE e2-micro VM)**: Follow the step-by-step guide in [docs/DEPLOYMENT_GCE_FREE.md](docs/DEPLOYMENT_GCE_FREE.md)
+- **Google Cloud Run (Serverless Container)**: Follow the guide in [docs/DEPLOYMENT_GCP.md](docs/DEPLOYMENT_GCP.md)
+
+---
+
 ## ☁️ Deploying to Railway.app (Free & Always-On)
 
 1. Push this repository to GitHub (make sure `.env` is NOT committed; `.gitignore` protects it).
