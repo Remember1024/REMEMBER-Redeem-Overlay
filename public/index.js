@@ -154,10 +154,18 @@
     if (textBorderToggle) textBorderToggle.checked = Boolean(isTextBorderOn);
     if (textBorderColorPicker) textBorderColorPicker.value = (currentUser.textBorderColor && currentUser.textBorderColor !== 'transparent') ? currentUser.textBorderColor : '#000000';
     if (textBorderWidthSelect) textBorderWidthSelect.value = currentUser.textBorderWidth || '2px';
+    const currentWidth = currentUser.textBorderWidth || '2px';
+    document.querySelectorAll('#textBorderWidthPills .btn-pill').forEach((pill) => {
+      pill.classList.toggle('active', pill.getAttribute('data-width') === currentWidth);
+    });
 
     if (fontFamilySelect) fontFamilySelect.value = currentUser.fontFamily || 'Kanit';
     if (fontSizeScaleSelect) fontSizeScaleSelect.value = String(currentUser.fontSizeScale || 1.0);
     if (cardThemeSelect) cardThemeSelect.value = currentUser.cardTheme || 'purple';
+    const currentTheme = currentUser.cardTheme || 'purple';
+    document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-theme') === currentTheme);
+    });
     if (cardBgColorPicker) cardBgColorPicker.value = currentUser.cardBgColor || '#1c1030';
     if (cardBgOpacitySelect) cardBgOpacitySelect.value = String(currentUser.cardBgOpacity ?? 0.94);
 
@@ -342,6 +350,9 @@
   // Theme preset change
   cardThemeSelect.addEventListener('change', () => {
     const selectedTheme = cardThemeSelect.value;
+    document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-theme') === selectedTheme);
+    });
     const preset = THEME_PRESETS[selectedTheme];
     if (preset) {
       if (cardBgColorPicker) cardBgColorPicker.value = preset.bg;
@@ -357,10 +368,26 @@
     updateLivePreview();
   });
 
+  // Quick theme preset buttons
+  document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const theme = btn.getAttribute('data-theme');
+      document.querySelectorAll('.theme-preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (cardThemeSelect) {
+        cardThemeSelect.value = theme;
+        cardThemeSelect.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
   // Custom theme controls change -> switch theme to 'custom'
   function onCustomCardStyleChange() {
     if (cardThemeSelect && cardThemeSelect.value !== 'custom') {
       cardThemeSelect.value = 'custom';
+      document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === 'custom');
+      });
     }
     updateLivePreview();
   }
@@ -413,7 +440,27 @@
       updateLivePreview();
     });
   }
-  if (textBorderWidthSelect) textBorderWidthSelect.addEventListener('change', updateLivePreview);
+  // Text border width pills
+  document.querySelectorAll('#textBorderWidthPills .btn-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#textBorderWidthPills .btn-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const width = pill.getAttribute('data-width');
+      if (textBorderWidthSelect) textBorderWidthSelect.value = width;
+      if (textBorderToggle) textBorderToggle.checked = true;
+      updateLivePreview();
+    });
+  });
+
+  if (textBorderWidthSelect) {
+    textBorderWidthSelect.addEventListener('change', () => {
+      const val = textBorderWidthSelect.value;
+      document.querySelectorAll('#textBorderWidthPills .btn-pill').forEach((pill) => {
+        pill.classList.toggle('active', pill.getAttribute('data-width') === val);
+      });
+      updateLivePreview();
+    });
+  }
   if (fontFamilySelect) fontFamilySelect.addEventListener('change', updateLivePreview);
   if (fontSizeScaleSelect) fontSizeScaleSelect.addEventListener('change', updateLivePreview);
 
@@ -542,6 +589,35 @@
     if (previewRewardTitle) {
       previewRewardTitle.textContent = displayTitle;
     }
+  }
+
+  // Toggle OBS Setup Guide Drawer
+  const toggleGuideBtn = document.getElementById('toggleGuideBtn');
+  const obsGuideDrawer = document.getElementById('obsGuideDrawer');
+  if (toggleGuideBtn && obsGuideDrawer) {
+    toggleGuideBtn.addEventListener('click', () => {
+      const isHidden = obsGuideDrawer.classList.toggle('hidden');
+      toggleGuideBtn.textContent = isHidden ? '📖 วิธีตั้งค่าใน OBS' : '🔼 ซ่อนวิธีตั้งค่า OBS';
+    });
+  }
+
+  // Live Preview Backdrop Switcher (Dark, Bright, Transparent Grid)
+  document.querySelectorAll('.btn-backdrop-pill').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.btn-backdrop-pill').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const bg = btn.getAttribute('data-bg');
+      const previewStage = document.getElementById('previewStage');
+      if (previewStage) previewStage.className = `preview-stage stage-${bg}`;
+    });
+  });
+
+  // Sticky Preview Side Save Button -> triggers main form submit
+  const sideSaveBtn = document.getElementById('sideSaveBtn');
+  if (sideSaveBtn && settingsForm) {
+    sideSaveBtn.addEventListener('click', () => {
+      settingsForm.requestSubmit();
+    });
   }
 
   // Copy Overlay URL

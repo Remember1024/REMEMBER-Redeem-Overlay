@@ -68,7 +68,7 @@
   </div>
 
   <!-- 2. USER DASHBOARD VIEW (Shown when logged in) -->
-  <div id="dashboardView" class="view-container hidden">
+  <div id="dashboardView" class="view-container dashboard-container hidden">
     <!-- Header -->
     <header class="app-header">
       <div class="header-brand">
@@ -104,68 +104,70 @@
         <span id="skippedAlertText">มีการแลกแต้มที่ถูกข้ามเนื่องจากไม่อยู่ใน Whitelist</span>
       </div>
       <div class="skipped-alert-actions">
-        <button type="button" id="addSkippedToWhitelistBtn" class="btn btn-sm btn-primary">+ เพิ่มแต้มนี้ใน
-          Whitelist</button>
+        <button type="button" id="addSkippedToWhitelistBtn" class="btn btn-sm btn-primary">+ เพิ่มแต้มนี้ใน Whitelist</button>
         <button type="button" id="dismissSkippedAlertBtn" class="btn btn-sm btn-ghost">✕</button>
       </div>
     </div>
 
-    <main class="dashboard-grid">
-      <!-- 1. OBS Browser Source URL Card -->
-      <section class="card url-card">
-        <div class="card-header-row">
-          <div>
-            <h2 class="card-title">OBS Browser Source URL</h2>
-            <p class="card-desc">นำลิงก์นี้ไปใส่ใน Browser Source ของ OBS Studio (ขนาดแนะนำ: กว้าง 600 x สูง 90)</p>
-          </div>
-          <button type="button" id="regenerateTokenBtn" class="btn btn-ghost btn-sm"
+    <!-- 1. OBS Browser Source URL Card (Compact & Clean) -->
+    <section class="card url-card-compact">
+      <div class="url-card-header">
+        <div class="url-title-wrap">
+          <span class="url-badge">OBS SOURCE</span>
+          <h2 class="card-title-sm">Browser Source URL</h2>
+          <span class="card-hint-sm">(ขนาดแนะนำ: Width 600 x Height 90)</span>
+        </div>
+        <div class="url-header-actions">
+          <button type="button" id="toggleGuideBtn" class="btn btn-ghost btn-xs">
+            📖 วิธีตั้งค่าใน OBS
+          </button>
+          <button type="button" id="regenerateTokenBtn" class="btn btn-ghost btn-xs"
             aria-label="Regenerate overlay token" title="สร้าง Token ใหม่กรณีทำลิงก์หลุด">
-            🔄 Regenerate Token
+            🔄 Gen Token
           </button>
         </div>
+      </div>
 
-        <div class="url-input-group">
-          <input type="text" id="overlayUrlInput" class="url-input" readonly>
-          <button type="button" id="copyUrlBtn" class="btn btn-primary">
-            <span id="copyUrlText">Copy URL</span>
-          </button>
-          <a id="openOverlayLink" href="#" target="_blank" class="btn btn-secondary">
-            Open Preview
-          </a>
-        </div>
+      <div class="url-input-group">
+        <input type="text" id="overlayUrlInput" class="url-input" readonly>
+        <button type="button" id="copyUrlBtn" class="btn btn-primary btn-copy">
+          <span id="copyUrlText">Copy URL</span>
+        </button>
+        <a id="openOverlayLink" href="#" target="_blank" class="btn btn-secondary">
+          Open Preview
+        </a>
+      </div>
 
-        <div class="obs-quick-guide">
-          <div class="guide-title">📖 วิธีนำไปใส่ใน OBS Studio ใน 3 ขั้นตอน:</div>
-          <ol class="guide-steps">
-            <li>คลิกปุ่ม <strong>Copy URL</strong> สีม่วงด้านบนนี้</li>
-            <li>ในโปรแกรม <strong>OBS Studio</strong>: ดูที่กล่อง <em>Sources (แหล่งสัญญาณ)</em> กดปุ่ม
-              <strong>+</strong> แล้วเลือก <strong>Browser (เบราว์เซอร์)</strong>
-            </li>
-            <li>วางลิงก์ที่ก๊อปปี้มาลงในช่อง <strong>URL</strong> (ตั้งขนาด Width: <strong>600</strong>, Height:
-              <strong>90</strong>) แล้วกด <strong>OK</strong> จบเลย!
-            </li>
-          </ol>
-        </div>
-      </section>
+      <!-- Collapsible Quick Guide -->
+      <div id="obsGuideDrawer" class="obs-quick-guide hidden">
+        <div class="guide-title">📖 วิธีนำไปใส่ใน OBS Studio ใน 3 ขั้นตอน:</div>
+        <ol class="guide-steps">
+          <li>คลิกปุ่ม <strong>Copy URL</strong> สีม่วงด้านบนนี้</li>
+          <li>ในโปรแกรม <strong>OBS Studio</strong>: ดูที่กล่อง <em>Sources (แหล่งสัญญาณ)</em> กดปุ่ม <strong>+</strong> แล้วเลือก <strong>Browser (เบราว์เซอร์)</strong></li>
+          <li>วางลิงก์ที่ก๊อปปี้มาลงในช่อง <strong>URL</strong> (ตั้งขนาด Width: <strong>600</strong>, Height: <strong>90</strong>) แล้วกด <strong>OK</strong> จบเลย!</li>
+        </ol>
+      </div>
+    </section>
 
-      <!-- 2. Settings Form: Overlay Customization -->
-      <section class="card settings-card">
-        <h2 class="card-title">การปรับแต่ง Overlay ประจำช่องของคุณ</h2>
-        <p class="card-desc">ตั้งค่าสีตัวอักษร สีการ์ด เส้นขอบ แสงเรือง Bloom และรายการแต้มที่ต้องการแสดง</p>
-
+    <!-- Main Workspace: Split 2-Column Grid on Desktop -->
+    <div class="dashboard-workspace">
+      <!-- Left Column: Settings Form -->
+      <div class="settings-column">
         <form id="settingsForm">
           <!-- Hidden compatibility field -->
           <input type="hidden" id="badgeTextInput" value="👑 1ST REDEEMER">
 
           <!-- Section 0: Text Content & Prefix Customization -->
-          <div class="settings-subgroup">
-            <h3 class="subgroup-title">✏️ ปรับแต่งข้อความ &amp; สัญลักษณ์ (# หรือ คำด้านหลัง)</h3>
+          <div class="settings-section-card">
+            <h3 class="section-card-title"><span>✏️</span> ปรับแต่งข้อความ &amp; สัญลักษณ์</h3>
+            <p class="section-card-desc">กำหนดสัญลักษณ์นำหน้า และรูปแบบข้อความที่จะแสดงเมื่อมีผู้ชมแลกแต้ม</p>
+
             <div class="settings-grid">
               <!-- Prefix Symbol -->
               <div class="form-group">
                 <label for="rewardPrefixInput">สัญลักษณ์นำหน้า (Prefix Symbol)</label>
                 <div class="prefix-input-row">
-                  <input type="text" id="rewardPrefixInput" class="form-input" value="#" maxlength="10" placeholder="เช่น # หรือ 👑 หรือเว้นว่าง">
+                  <input type="text" id="rewardPrefixInput" class="form-input" value="#" maxlength="10" placeholder="เช่น # หรือ 👑">
                   <div class="prefix-presets">
                     <button type="button" class="btn-preset-prefix" data-prefix="#">#</button>
                     <button type="button" class="btn-preset-prefix" data-prefix="👑">👑</button>
@@ -182,7 +184,7 @@
                 <label for="rewardTextModeSelect">รูปแบบข้อความแสดงผล (Display Text Mode)</label>
                 <select id="rewardTextModeSelect" class="form-select">
                   <option value="twitch" selected>🏷️ แสดงชื่อแต้มจาก Twitch (เช่น # กระผมมาเป็นคนแรกเลยนะ)</option>
-                  <option value="custom">👑 แสดงข้อความกำหนดเอง (เช่น 👑 1ST REDEEMER หรือ คนแรกของสตรีม!)</option>
+                  <option value="custom">👑 แสดงข้อความกำหนดเอง (เช่น 👑 1ST REDEEMER)</option>
                   <option value="both">✨ แสดงข้อความกำหนดเอง + ชื่อแต้ม (เช่น 👑 1ST REDEEMER • กระผมมาเป็นคนแรกเลยนะ)</option>
                 </select>
                 <span class="hint-text">เลือกว่าจะให้แสดงชื่อแต้ม หรือข้อความที่คุณระบุเอง</span>
@@ -197,178 +199,173 @@
             </div>
           </div>
 
-          <!-- Section 1: Colors for Text & Symbols -->
-          <div class="settings-subgroup">
-            <h3 class="subgroup-title">🔤 สีตัวอักษร &amp; สัญลักษณ์</h3>
-            <div class="settings-grid">
+          <!-- Section 1: Colors & Text Border -->
+          <div class="settings-section-card">
+            <h3 class="section-card-title"><span>🔤</span> สีตัวอักษร &amp; เส้นขอบตัวหนังสือ</h3>
+            <p class="section-card-desc">ปรับแต่งโทนสีของชื่อผู้ชม สัญลักษณ์ และใส่เส้นขอบให้อ่านง่ายบนทุกฉากเกม</p>
+
+            <!-- 2x2 Grid for Core Text Colors -->
+            <div class="text-colors-grid">
               <!-- Prefix @ Color -->
-              <div class="form-group">
+              <div class="form-group-color-card">
                 <label>สีเครื่องหมาย @ (สัญลักษณ์หน้าชื่อ)</label>
                 <div class="color-picker-row">
                   <input type="color" id="atColorPicker" value="#fbbf24" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="at-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
-                      title="Gold" aria-label="Gold"></button>
-                    <button type="button" class="at-color-chip" data-color="#c084fc" style="--chip-color: #c084fc;"
-                      title="Violet" aria-label="Violet"></button>
-                    <button type="button" class="at-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
-                      title="Sky Cyan" aria-label="Sky Cyan"></button>
-                    <button type="button" class="at-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;"
-                      title="Rose Pink" aria-label="Rose Pink"></button>
-                    <button type="button" class="at-color-chip" data-color="#34d399" style="--chip-color: #34d399;"
-                      title="Emerald" aria-label="Emerald"></button>
-                    <button type="button" class="at-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White" aria-label="White"></button>
+                    <button type="button" class="at-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold"></button>
+                    <button type="button" class="at-color-chip" data-color="#c084fc" style="--chip-color: #c084fc;" title="Violet"></button>
+                    <button type="button" class="at-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan"></button>
+                    <button type="button" class="at-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;" title="Rose Pink"></button>
+                    <button type="button" class="at-color-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald"></button>
+                    <button type="button" class="at-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
                   </div>
                 </div>
               </div>
 
               <!-- Viewer Name Color -->
-              <div class="form-group">
-                <label>สีชื่อผู้ชม (ชื่อคนแลก)</label>
+              <div class="form-group-color-card">
+                <label>สีชื่อผู้ชม (คนแรกของสตรีม)</label>
                 <div class="color-picker-row">
                   <input type="color" id="viewerColorPicker" value="#ffffff" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="viewer-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White" aria-label="White"></button>
-                    <button type="button" class="viewer-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;"
-                      title="Light Gold" aria-label="Light Gold"></button>
-                    <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;"
-                      title="Lavender" aria-label="Lavender"></button>
-                    <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;"
-                      title="Ice Cyan" aria-label="Ice Cyan"></button>
-                    <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;"
-                      title="Pastel Pink" aria-label="Pastel Pink"></button>
-                    <button type="button" class="viewer-color-chip" data-color="#86efac" style="--chip-color: #86efac;"
-                      title="Mint" aria-label="Mint"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;" title="Light Gold"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;" title="Lavender"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;" title="Ice Cyan"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;" title="Pastel Pink"></button>
+                    <button type="button" class="viewer-color-chip" data-color="#86efac" style="--chip-color: #86efac;" title="Mint"></button>
                   </div>
                 </div>
               </div>
 
               <!-- Prefix # Color -->
-              <div class="form-group">
+              <div class="form-group-color-card">
                 <label>สีเครื่องหมาย # (สัญลักษณ์หน้าแต้ม)</label>
                 <div class="color-picker-row">
                   <input type="color" id="hashColorPicker" value="#c4b5fd" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="hash-color-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;"
-                      title="Violet" aria-label="Violet"></button>
-                    <button type="button" class="hash-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
-                      title="Sky Cyan" aria-label="Sky Cyan"></button>
-                    <button type="button" class="hash-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;"
-                      title="Rose Pink" aria-label="Rose Pink"></button>
-                    <button type="button" class="hash-color-chip" data-color="#34d399" style="--chip-color: #34d399;"
-                      title="Emerald" aria-label="Emerald"></button>
-                    <button type="button" class="hash-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
-                      title="Gold" aria-label="Gold"></button>
-                    <button type="button" class="hash-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White" aria-label="White"></button>
+                    <button type="button" class="hash-color-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;" title="Violet"></button>
+                    <button type="button" class="hash-color-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan"></button>
+                    <button type="button" class="hash-color-chip" data-color="#fb7185" style="--chip-color: #fb7185;" title="Rose Pink"></button>
+                    <button type="button" class="hash-color-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald"></button>
+                    <button type="button" class="hash-color-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold"></button>
+                    <button type="button" class="hash-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
                   </div>
                 </div>
               </div>
 
               <!-- Reward Title Color -->
-              <div class="form-group">
-                <label>สีชื่อแต้ม (ชื่อรางวัล Channel Point)</label>
+              <div class="form-group-color-card">
+                <label>สีชื่อแต้มรางวัล (Channel Point)</label>
                 <div class="color-picker-row">
                   <input type="color" id="rewardColorPicker" value="#ffffff" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="reward-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White" aria-label="White"></button>
-                    <button type="button" class="reward-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;"
-                      title="Light Gold" aria-label="Light Gold"></button>
-                    <button type="button" class="reward-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;"
-                      title="Lavender" aria-label="Lavender"></button>
-                    <button type="button" class="reward-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;"
-                      title="Ice Cyan" aria-label="Ice Cyan"></button>
-                    <button type="button" class="reward-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;"
-                      title="Pastel Pink" aria-label="Pastel Pink"></button>
-                    <button type="button" class="reward-color-chip" data-color="#86efac" style="--chip-color: #86efac;"
-                      title="Mint" aria-label="Mint"></button>
+                    <button type="button" class="reward-color-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
+                    <button type="button" class="reward-color-chip" data-color="#fef08a" style="--chip-color: #fef08a;" title="Light Gold"></button>
+                    <button type="button" class="reward-color-chip" data-color="#e9d5ff" style="--chip-color: #e9d5ff;" title="Lavender"></button>
+                    <button type="button" class="reward-color-chip" data-color="#a5f3fc" style="--chip-color: #a5f3fc;" title="Ice Cyan"></button>
+                    <button type="button" class="reward-color-chip" data-color="#fbcfe8" style="--chip-color: #fbcfe8;" title="Pastel Pink"></button>
+                    <button type="button" class="reward-color-chip" data-color="#86efac" style="--chip-color: #86efac;" title="Mint"></button>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- Text Border (Stroke) Toggle & Color -->
-              <div class="form-group form-group-toggleable">
-                <div class="label-with-toggle">
-                  <label for="textBorderColorPicker">เส้นขอบตัวอักษร (Text Border / Stroke)</label>
-                  <label class="switch-inline">
-                    <input type="checkbox" id="textBorderToggle">
-                    <span class="switch-text">เปิดเส้นขอบ</span>
-                  </label>
-                </div>
-                <div id="textBorderControlsContainer" class="color-picker-row">
-                  <input type="color" id="textBorderColorPicker" value="#000000" class="color-picker">
-                  <div class="color-presets">
-                    <button type="button" class="text-border-chip chip-transparent" data-color="transparent"
-                      title="🚫 ไม่ใส่เลย (ไม่มีเส้นขอบตัวอักษร)" aria-label="Transparent"></button>
-                    <button type="button" class="text-border-chip" data-color="#000000" style="--chip-color: #000000;"
-                      title="Black (ดำสนิท - แนะนำ)" aria-label="Black"></button>
-                    <button type="button" class="text-border-chip" data-color="#18181b" style="--chip-color: #18181b;"
-                      title="Dark Slate (เทาดำเข้ม)" aria-label="Dark Slate"></button>
-                    <button type="button" class="text-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White (ขาวสว่าง)" aria-label="White"></button>
-                    <button type="button" class="text-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
-                      title="Gold (ทอง)" aria-label="Gold"></button>
-                    <button type="button" class="text-border-chip" data-color="#c084fc" style="--chip-color: #c084fc;"
-                      title="Neon Violet (ม่วงนีออน)" aria-label="Neon Violet"></button>
-                    <button type="button" class="text-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
-                      title="Sky Cyan (ฟ้าไซแอน)" aria-label="Sky Cyan"></button>
-                    <button type="button" class="text-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
-                      title="Rose Pink (ชมพูโรส)" aria-label="Rose Pink"></button>
+            <!-- Dedicated Text Border Feature Box -->
+            <div class="text-border-feature-card">
+              <div class="feature-card-header">
+                <div class="feature-title-wrap">
+                  <span class="feature-icon">🖋️</span>
+                  <div>
+                    <label for="textBorderColorPicker" class="feature-title">เส้นขอบตัวอักษร (Text Border / Stroke)</label>
+                    <p class="feature-desc">เลือกสีเส้นขอบ หรือคลิก "🚫 ไม่ใส่เลย" ช่วยให้ตัวหนังสือเด่นชัดบนทุกฉาก</p>
                   </div>
                 </div>
-                <div class="text-border-width-row" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                  <label for="textBorderWidthSelect" style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">ความหนาขอบ:</label>
-                  <select id="textBorderWidthSelect" class="form-select" style="padding: 3px 8px; font-size: 0.8rem; width: auto;">
-                    <option value="1px">1px (บาง)</option>
-                    <option value="2px" selected>2px (ปานกลาง คมชัด - แนะนำ)</option>
-                    <option value="3px">3px (หนา ชัดเจน)</option>
-                    <option value="4px">4px (หนาพิเศษ)</option>
+                <label class="switch-inline">
+                  <input type="checkbox" id="textBorderToggle">
+                  <span class="switch-text">เปิดเส้นขอบ</span>
+                </label>
+              </div>
+
+              <div class="feature-card-body">
+                <div class="feature-row">
+                  <span class="feature-label">สีเส้นขอบ:</span>
+                  <div class="color-picker-row">
+                    <input type="color" id="textBorderColorPicker" value="#000000" class="color-picker">
+                    <div class="color-presets">
+                      <button type="button" class="text-border-chip chip-transparent" data-color="transparent" title="🚫 ไม่ใส่เลย (ไม่มีเส้นขอบ)"></button>
+                      <button type="button" class="text-border-chip" data-color="#000000" style="--chip-color: #000000;" title="Black (ดำสนิท - แนะนำ)"></button>
+                      <button type="button" class="text-border-chip" data-color="#18181b" style="--chip-color: #18181b;" title="Dark Slate"></button>
+                      <button type="button" class="text-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
+                      <button type="button" class="text-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold"></button>
+                      <button type="button" class="text-border-chip" data-color="#c084fc" style="--chip-color: #c084fc;" title="Neon Violet"></button>
+                      <button type="button" class="text-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan"></button>
+                      <button type="button" class="text-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Pink"></button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="feature-row">
+                  <span class="feature-label">ความหนา:</span>
+                  <div class="pill-selector" id="textBorderWidthPills">
+                    <button type="button" class="btn-pill" data-width="1px">1px (บาง)</button>
+                    <button type="button" class="btn-pill active" data-width="2px">2px (แนะนำ)</button>
+                    <button type="button" class="btn-pill" data-width="3px">3px (หนา)</button>
+                    <button type="button" class="btn-pill" data-width="4px">4px (หนามาก)</button>
+                  </div>
+                  <!-- Hidden fallback select synced for form serialization -->
+                  <select id="textBorderWidthSelect" class="form-select hidden-select">
+                    <option value="1px">1px</option>
+                    <option value="2px" selected>2px</option>
+                    <option value="3px">3px</option>
+                    <option value="4px">4px</option>
                   </select>
                 </div>
-                <span class="hint-text">เลือกสีเส้นขอบตัวหนังสือ หรือกด "🚫 ไม่ใส่เลย" ช่วยให้ตัวหนังสืออ่านง่ายและเด่นชัดขึ้น</span>
               </div>
             </div>
           </div>
 
           <!-- Section 2: Card Appearance, Border, Bloom & Shadow -->
-          <div class="settings-subgroup">
-            <h3 class="subgroup-title">🎨 การ์ด, เส้นขอบ, แสง Bloom &amp; เงา Shadow</h3>
-            <div class="settings-grid">
-              <!-- Card Theme Preset Selector -->
-              <div class="form-group">
-                <label for="cardThemeSelect">ธีมการ์ดสำเร็จรูป (Theme Presets)</label>
-                <select id="cardThemeSelect" class="form-select">
-                  <option value="purple" selected>🟣 ม่วงนีออน (Dark Violet - ค่าเริ่มต้น)</option>
-                  <option value="midnight">🔵 น้ำเงินเข้ม (Midnight Obsidian)</option>
-                  <option value="cyberpunk">🔴 ชมพูนีออน (Cyberpunk Slate)</option>
-                  <option value="emerald">🟢 เขียวมรกต (Emerald Matrix)</option>
-                  <option value="sunset">🟠 ส้มอำพัน (Sunset Amber)</option>
-                  <option value="stealth">⚫ ดำสนิท (Stealth Black)</option>
-                  <option value="custom">🎨 ปรับแต่งสีเองอิสระ (Custom)</option>
-                </select>
-              </div>
+          <div class="settings-section-card">
+            <h3 class="section-card-title"><span>🎨</span> การ์ด, ธีม &amp; แสงเรือง</h3>
+            <p class="section-card-desc">ปรับแต่งพื้นหลังการ์ด ความโค้งมน เส้นขอบรอบการ์ด และเอฟเฟกต์เรืองแสง</p>
 
+            <!-- Theme Presets Quick Selector -->
+            <div class="form-group theme-select-group">
+              <label for="cardThemeSelect">ธีมการ์ดสำเร็จรูป (Theme Presets)</label>
+              <div class="theme-presets-row">
+                <button type="button" class="theme-preset-btn active" data-theme="purple">🟣 ม่วงนีออน</button>
+                <button type="button" class="theme-preset-btn" data-theme="midnight">🔵 Midnight</button>
+                <button type="button" class="theme-preset-btn" data-theme="cyberpunk">🔴 Cyberpunk</button>
+                <button type="button" class="theme-preset-btn" data-theme="emerald">🟢 Emerald</button>
+                <button type="button" class="theme-preset-btn" data-theme="sunset">🟠 Sunset</button>
+                <button type="button" class="theme-preset-btn" data-theme="stealth">⚫ Stealth</button>
+                <button type="button" class="theme-preset-btn" data-theme="custom">🎨 กำหนดเอง</button>
+              </div>
+              <select id="cardThemeSelect" class="form-select hidden-select">
+                <option value="purple" selected>🟣 ม่วงนีออน (Dark Violet - ค่าเริ่มต้น)</option>
+                <option value="midnight">🔵 น้ำเงินเข้ม (Midnight Obsidian)</option>
+                <option value="cyberpunk">🔴 ชมพูนีออน (Cyberpunk Slate)</option>
+                <option value="emerald">🟢 เขียวมรกต (Emerald Matrix)</option>
+                <option value="sunset">🟠 ส้มอำพัน (Sunset Amber)</option>
+                <option value="stealth">⚫ ดำสนิท (Stealth Black)</option>
+                <option value="custom">🎨 ปรับแต่งสีเองอิสระ (Custom)</option>
+              </select>
+            </div>
+
+            <div class="settings-grid">
               <!-- Card Background Color -->
               <div class="form-group">
                 <label>สีพื้นหลังการ์ด (Card Background)</label>
                 <div class="color-picker-row">
                   <input type="color" id="cardBgColorPicker" value="#1c1030" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="card-bg-chip" data-color="#1c1030" style="--chip-color: #1c1030;"
-                      title="Dark Violet" aria-label="Dark Violet"></button>
-                    <button type="button" class="card-bg-chip" data-color="#0f172a" style="--chip-color: #0f172a;"
-                      title="Midnight Slate" aria-label="Midnight Slate"></button>
-                    <button type="button" class="card-bg-chip" data-color="#18181b" style="--chip-color: #18181b;"
-                      title="Cyberpunk Black" aria-label="Cyberpunk Black"></button>
-                    <button type="button" class="card-bg-chip" data-color="#022c22" style="--chip-color: #022c22;"
-                      title="Emerald Green" aria-label="Emerald Green"></button>
-                    <button type="button" class="card-bg-chip" data-color="#271406" style="--chip-color: #271406;"
-                      title="Sunset Amber" aria-label="Sunset Amber"></button>
-                    <button type="button" class="card-bg-chip" data-color="#09090b" style="--chip-color: #09090b;"
-                      title="Pitch Dark" aria-label="Pitch Dark"></button>
+                    <button type="button" class="card-bg-chip" data-color="#1c1030" style="--chip-color: #1c1030;" title="Dark Violet"></button>
+                    <button type="button" class="card-bg-chip" data-color="#0f172a" style="--chip-color: #0f172a;" title="Midnight Slate"></button>
+                    <button type="button" class="card-bg-chip" data-color="#18181b" style="--chip-color: #18181b;" title="Cyberpunk Black"></button>
+                    <button type="button" class="card-bg-chip" data-color="#022c22" style="--chip-color: #022c22;" title="Emerald Green"></button>
+                    <button type="button" class="card-bg-chip" data-color="#271406" style="--chip-color: #271406;" title="Sunset Amber"></button>
+                    <button type="button" class="card-bg-chip" data-color="#09090b" style="--chip-color: #09090b;" title="Pitch Dark"></button>
                   </div>
                 </div>
               </div>
@@ -377,8 +374,8 @@
               <div class="form-group">
                 <label for="cardBgOpacitySelect">ความโปร่งใสพื้นหลัง (Background Opacity)</label>
                 <select id="cardBgOpacitySelect" class="form-select">
-                  <option value="0">0% (โปร่งใส 100% ทะลุเห็นหลัง ไม่มีพื้นหลัง)</option>
-                  <option value="0.70">70% (โปร่งแสงสูง เห็นภาพเกมด้านหลังชัด)</option>
+                  <option value="0">0% (โปร่งใส 100% ไม่มีพื้นหลัง ลอยบนจอ)</option>
+                  <option value="0.70">70% (โปร่งแสงสูง เห็นภาพเกมด้านหลัง)</option>
                   <option value="0.85">85% (กระจกโปร่งแสงปานกลาง)</option>
                   <option value="0.94" selected>94% (กระจกมัว คมชัด สวยงาม - แนะนำ)</option>
                   <option value="1.0">100% (ทึบแสง ไม่โปร่งใส)</option>
@@ -408,20 +405,13 @@
                 <div id="borderControlsContainer" class="color-picker-row">
                   <input type="color" id="cardBorderColorPicker" value="#c4b5fd" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="card-border-chip chip-transparent" data-color="transparent"
-                      title="🚫 โปร่งใส (ไม่มีเส้นขอบ)" aria-label="Transparent"></button>
-                    <button type="button" class="card-border-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;"
-                      title="Violet" aria-label="Violet"></button>
-                    <button type="button" class="card-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
-                      title="Sky Cyan" aria-label="Sky Cyan"></button>
-                    <button type="button" class="card-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
-                      title="Rose Pink" aria-label="Rose Pink"></button>
-                    <button type="button" class="card-border-chip" data-color="#34d399" style="--chip-color: #34d399;"
-                      title="Emerald" aria-label="Emerald"></button>
-                    <button type="button" class="card-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
-                      title="Gold" aria-label="Gold"></button>
-                    <button type="button" class="card-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
-                      title="White" aria-label="White"></button>
+                    <button type="button" class="card-border-chip chip-transparent" data-color="transparent" title="🚫 โปร่งใส (ไม่มีเส้นขอบ)"></button>
+                    <button type="button" class="card-border-chip" data-color="#c4b5fd" style="--chip-color: #c4b5fd;" title="Violet"></button>
+                    <button type="button" class="card-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Sky Cyan"></button>
+                    <button type="button" class="card-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Pink"></button>
+                    <button type="button" class="card-border-chip" data-color="#34d399" style="--chip-color: #34d399;" title="Emerald"></button>
+                    <button type="button" class="card-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;" title="Gold"></button>
+                    <button type="button" class="card-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;" title="White"></button>
                   </div>
                 </div>
               </div>
@@ -432,26 +422,19 @@
                   <label for="cardGlowColorPicker">แสงเรือง Bloom (Neon Glow)</label>
                   <label class="switch-inline">
                     <input type="checkbox" id="bloomToggle" checked>
-                    <span class="switch-text">เปิดแสงเรือง Bloom</span>
+                    <span class="switch-text">เปิดแสงเรือง</span>
                   </label>
                 </div>
                 <div id="bloomControlsContainer" class="color-picker-row">
                   <input type="color" id="cardGlowColorPicker" value="#a855f7" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="card-glow-chip chip-transparent" data-color="transparent"
-                      title="🚫 ปิดแสงเรือง (Transparent)" aria-label="Transparent"></button>
-                    <button type="button" class="card-glow-chip" data-color="#a855f7" style="--chip-color: #a855f7;"
-                      title="Purple Glow" aria-label="Purple Glow"></button>
-                    <button type="button" class="card-glow-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
-                      title="Cyan Glow" aria-label="Cyan Glow"></button>
-                    <button type="button" class="card-glow-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
-                      title="Rose Glow" aria-label="Rose Glow"></button>
-                    <button type="button" class="card-glow-chip" data-color="#10b981" style="--chip-color: #10b981;"
-                      title="Green Glow" aria-label="Green Glow"></button>
-                    <button type="button" class="card-glow-chip" data-color="#f59e0b" style="--chip-color: #f59e0b;"
-                      title="Amber Glow" aria-label="Amber Glow"></button>
-                    <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;"
-                      title="Subtle Slate" aria-label="Subtle Slate"></button>
+                    <button type="button" class="card-glow-chip chip-transparent" data-color="transparent" title="🚫 ปิดแสงเรือง"></button>
+                    <button type="button" class="card-glow-chip" data-color="#a855f7" style="--chip-color: #a855f7;" title="Purple Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;" title="Cyan Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;" title="Rose Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#10b981" style="--chip-color: #10b981;" title="Green Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#f59e0b" style="--chip-color: #f59e0b;" title="Amber Glow"></button>
+                    <button type="button" class="card-glow-chip" data-color="#64748b" style="--chip-color: #64748b;" title="Subtle Slate"></button>
                   </div>
                 </div>
               </div>
@@ -459,36 +442,32 @@
               <!-- Shadow Toggle & Color -->
               <div class="form-group form-group-toggleable">
                 <div class="label-with-toggle">
-                  <label for="cardShadowColorPicker">เงาตกกระทบการ์ด (Card Shadow)</label>
+                  <label for="cardShadowColorPicker">เงาการ์ด (Card Shadow)</label>
                   <label class="switch-inline">
                     <input type="checkbox" id="shadowToggle" checked>
-                    <span class="switch-text">เปิดเงา Shadow</span>
+                    <span class="switch-text">เปิดเงา</span>
                   </label>
                 </div>
                 <div id="shadowControlsContainer" class="color-picker-row">
                   <input type="color" id="cardShadowColorPicker" value="#000000" class="color-picker">
                   <div class="color-presets">
-                    <button type="button" class="card-shadow-chip chip-transparent" data-color="transparent"
-                      title="🚫 ไม่มีเงา (Transparent)" aria-label="Transparent"></button>
-                    <button type="button" class="card-shadow-chip" data-color="#000000" style="--chip-color: #000000;"
-                      title="Deep Black" aria-label="Deep Black"></button>
-                    <button type="button" class="card-shadow-chip" data-color="#1e1b4b" style="--chip-color: #1e1b4b;"
-                      title="Midnight Dark" aria-label="Midnight Dark"></button>
-                    <button type="button" class="card-shadow-chip" data-color="#4c1d95" style="--chip-color: #4c1d95;"
-                      title="Deep Violet" aria-label="Deep Violet"></button>
-                    <button type="button" class="card-shadow-chip" data-color="#0f172a" style="--chip-color: #0f172a;"
-                      title="Slate Dark" aria-label="Slate Dark"></button>
-                    <button type="button" class="card-shadow-chip" data-color="#450a0a" style="--chip-color: #450a0a;"
-                      title="Crimson Dark" aria-label="Crimson Dark"></button>
+                    <button type="button" class="card-shadow-chip chip-transparent" data-color="transparent" title="🚫 ไม่มีเงา"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#000000" style="--chip-color: #000000;" title="Deep Black"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#1e1b4b" style="--chip-color: #1e1b4b;" title="Midnight Dark"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#4c1d95" style="--chip-color: #4c1d95;" title="Deep Violet"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#0f172a" style="--chip-color: #0f172a;" title="Slate Dark"></button>
+                    <button type="button" class="card-shadow-chip" data-color="#450a0a" style="--chip-color: #450a0a;" title="Crimson Dark"></button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Section 3: Font, Size & Sound -->
-          <div class="settings-subgroup">
-            <h3 class="subgroup-title">⚙️ รูปแบบ &amp; ระบบ</h3>
+          <!-- Section 3: Font, Size & Audio -->
+          <div class="settings-section-card">
+            <h3 class="section-card-title"><span>⚙️</span> ฟอนต์, ขนาด &amp; เสียง</h3>
+            <p class="section-card-desc">เลือกแบบตัวอักษร ปรับอัตราขยายของ Overlay และเสียงเตือน</p>
+
             <div class="settings-grid">
               <!-- Font Family -->
               <div class="form-group">
@@ -526,21 +505,16 @@
           </div>
 
           <!-- Whitelist Reward Words (Wishlist) -->
-          <div class="whitelist-section">
-            <label class="section-label">
-              <span>รายการแต้มที่อนุญาตให้แสดง (Reward Whitelist)</span>
-              <span class="label-hint">💡 ค่าเริ่มต้น: หากปล่อยว่างไว้
-                ระบบจะอนุญาตให้แสดง<strong>ทุกแต้ม</strong>ที่แลกในสตรีม
-                (หรือใส่ชื่อแต้มด้านล่างเพื่อจำกัดเฉพาะบางแต้ม)</span>
-            </label>
+          <div class="settings-section-card">
+            <h3 class="section-card-title"><span>🛡️</span> รายการแต้มที่อนุญาตให้แสดง (Reward Whitelist)</h3>
+            <p class="section-card-desc">💡 หากปล่อยว่างไว้ ระบบจะอนุญาตให้แสดง<strong>ทุกแต้ม</strong> หรือเลือกแต้มด้านล่างเพื่อจำกัดเฉพาะบางแต้ม</p>
 
             <!-- Tags Container -->
             <div id="whitelistTagsContainer" class="tags-container"></div>
 
             <!-- Add Tag Input -->
             <div class="add-tag-row">
-              <input type="text" id="newTagInput"
-                placeholder="พิมพ์ชื่อแต้มที่ต้องการ เช่น คนแรก แล้วกด Enter หรือคลิกเพิ่ม">
+              <input type="text" id="newTagInput" placeholder="พิมพ์ชื่อแต้มที่ต้องการ เช่น คนแรก แล้วกด Enter หรือคลิกเพิ่ม">
               <button type="button" id="addTagBtn" class="btn btn-secondary">
                 + เพิ่มแต้ม
               </button>
@@ -550,8 +524,7 @@
             <div class="twitch-rewards-container" id="twitchRewardsContainer">
               <div class="twitch-rewards-header">
                 <span class="twitch-rewards-title">แต้มจากช่อง Twitch ของคุณ (คลิกเพื่อเพิ่ม/ลบจาก Whitelist):</span>
-                <button type="button" id="fetchTwitchRewardsBtn" class="btn btn-sm btn-secondary">🔄 โหลดแต้มจาก
-                  Twitch</button>
+                <button type="button" id="fetchTwitchRewardsBtn" class="btn btn-sm btn-secondary">🔄 โหลดแต้มจาก Twitch</button>
               </div>
               <div id="twitchRewardsList" class="twitch-rewards-list">
                 <span class="hint-text">คลิก "โหลดแต้มจาก Twitch" เพื่อเลือกแต้มในช่องของคุณ</span>
@@ -565,44 +538,55 @@
             </button>
           </div>
         </form>
-      </section>
+      </div>
 
-      <!-- 3. Live Preview and Testing Stage -->
-      <section class="card preview-card">
-        <div class="card-header-row">
-          <div>
-            <h2 class="card-title">Live Preview &amp; ทดสอบ</h2>
-            <p class="card-desc">ตัวอย่างการแสดงผลบน OBS ตามการตั้งค่าปัจจุบันของคุณ</p>
-          </div>
-          <div class="preview-actions">
-            <button type="button" id="resetOverlayBtn" class="btn btn-danger btn-sm">Reset Overlay</button>
-          </div>
-        </div>
-
-        <div class="preview-stage">
-          <div id="previewCard" class="redeem-card theme-purple first-redeemer">
-            <div class="card-glow"></div>
-            <div class="card-content-row">
-              <span class="user-chunk">
-                <span class="prefix-at" id="previewPrefixAt">@</span><span id="previewViewer"
-                  class="viewer-name">ViewerName</span>
-              </span>
-              <span class="reward-chunk">
-                <span class="prefix-hash" id="previewPrefixHash">#</span><span id="previewRewardTitle"
-                  class="reward-title">แต้มแรกของวัน</span>
-              </span>
+      <!-- Right Column: Sticky Live Preview & Controls -->
+      <aside class="preview-column">
+        <div class="sticky-preview-wrapper">
+          <section class="card preview-card-modern">
+            <div class="preview-header">
+              <div class="preview-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <h2 class="card-title-sm">Live Preview</h2>
+              </div>
+              <div class="preview-backdrop-pills">
+                <button type="button" class="btn-backdrop-pill active" data-bg="dark" title="พื้นหลังมืด">🌙 มืด</button>
+                <button type="button" class="btn-backdrop-pill" data-bg="bright" title="พื้นหลังสว่าง (เช็คเส้นขอบ)">☀️ สว่าง</button>
+                <button type="button" class="btn-backdrop-pill" data-bg="grid" title="ตารางโปร่งใส">🏁 โปร่ง</button>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="test-controls-row">
-          <button type="button" id="sendTestRedeemBtn" class="btn btn-secondary">
-            ▶️ ส่งทดสอบแต้ม (Test Redemption)
-          </button>
+            <div id="previewStage" class="preview-stage stage-dark">
+              <div id="previewCard" class="redeem-card theme-purple first-redeemer">
+                <div class="card-glow"></div>
+                <div class="card-content-row">
+                  <span class="user-chunk">
+                    <span class="prefix-at" id="previewPrefixAt">@</span><span id="previewViewer" class="viewer-name">ViewerName</span>
+                  </span>
+                  <span class="reward-chunk">
+                    <span class="prefix-hash" id="previewPrefixHash">#</span><span id="previewRewardTitle" class="reward-title">แต้มแรกของวัน</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-controls-panel">
+              <div class="preview-test-row">
+                <button type="button" id="sendTestRedeemBtn" class="btn btn-secondary btn-full">
+                  ▶️ ส่งทดสอบแต้ม (Test)
+                </button>
+                <button type="button" id="resetOverlayBtn" class="btn btn-danger-soft" title="ล้างหน้าจอ OBS">
+                  🔄 ล้างหน้าจอ
+                </button>
+              </div>
+              <button type="button" id="sideSaveBtn" class="btn btn-primary btn-save-prominent btn-full">
+                💾 บันทึกการตั้งค่า (Save Settings)
+              </button>
+            </div>
+          </section>
         </div>
-      </section>
-    </main>
-  </div>
+      </aside>
+    </div>
 
   <!-- Bottom Nav / Footer Credit -->
   <footer class="app-credit-footer">
