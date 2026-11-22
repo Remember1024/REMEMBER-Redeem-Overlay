@@ -161,11 +161,7 @@
 
     if (fontFamilySelect) fontFamilySelect.value = currentUser.fontFamily || 'Kanit';
     if (fontSizeScaleSelect) fontSizeScaleSelect.value = String(currentUser.fontSizeScale || 1.0);
-    if (cardThemeSelect) cardThemeSelect.value = currentUser.cardTheme || 'purple';
-    const currentTheme = currentUser.cardTheme || 'purple';
-    document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.getAttribute('data-theme') === currentTheme);
-    });
+    if (cardThemeSelect) cardThemeSelect.value = currentUser.cardTheme || 'custom';
     if (cardBgColorPicker) cardBgColorPicker.value = currentUser.cardBgColor || '#1c1030';
     if (cardBgOpacitySelect) cardBgOpacitySelect.value = String(currentUser.cardBgOpacity ?? 0.94);
 
@@ -347,47 +343,10 @@
     });
   });
 
-  // Theme preset change
-  cardThemeSelect.addEventListener('change', () => {
-    const selectedTheme = cardThemeSelect.value;
-    document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.getAttribute('data-theme') === selectedTheme);
-    });
-    const preset = THEME_PRESETS[selectedTheme];
-    if (preset) {
-      if (cardBgColorPicker) cardBgColorPicker.value = preset.bg;
-      if (cardBgOpacitySelect) cardBgOpacitySelect.value = preset.opacity;
-      if (borderToggle) borderToggle.checked = true;
-      if (cardBorderColorPicker) cardBorderColorPicker.value = preset.border;
-      if (bloomToggle) bloomToggle.checked = true;
-      if (cardGlowColorPicker) cardGlowColorPicker.value = preset.glow;
-      if (shadowToggle) shadowToggle.checked = true;
-      if (cardShadowColorPicker) cardShadowColorPicker.value = preset.shadow || '#000000';
-      if (cardRadiusSelect) cardRadiusSelect.value = preset.radius;
-    }
-    updateLivePreview();
-  });
-
-  // Quick theme preset buttons
-  document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const theme = btn.getAttribute('data-theme');
-      document.querySelectorAll('.theme-preset-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (cardThemeSelect) {
-        cardThemeSelect.value = theme;
-        cardThemeSelect.dispatchEvent(new Event('change'));
-      }
-    });
-  });
-
   // Custom theme controls change -> switch theme to 'custom'
   function onCustomCardStyleChange() {
     if (cardThemeSelect && cardThemeSelect.value !== 'custom') {
       cardThemeSelect.value = 'custom';
-      document.querySelectorAll('.theme-preset-btn').forEach((btn) => {
-        btn.classList.toggle('active', btn.getAttribute('data-theme') === 'custom');
-      });
     }
     updateLivePreview();
   }
@@ -611,14 +570,6 @@
       if (previewStage) previewStage.className = `preview-stage stage-${bg}`;
     });
   });
-
-  // Sticky Preview Side Save Button -> triggers main form submit
-  const sideSaveBtn = document.getElementById('sideSaveBtn');
-  if (sideSaveBtn && settingsForm) {
-    sideSaveBtn.addEventListener('click', () => {
-      settingsForm.requestSubmit();
-    });
-  }
 
   // Copy Overlay URL
   copyUrlBtn.addEventListener('click', async () => {

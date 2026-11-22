@@ -327,31 +327,10 @@
 
           <!-- Section 2: Card Appearance, Border, Bloom & Shadow -->
           <div class="settings-section-card">
-            <h3 class="section-card-title"><span>🎨</span> การ์ด, ธีม &amp; แสงเรือง</h3>
-            <p class="section-card-desc">ปรับแต่งพื้นหลังการ์ด ความโค้งมน เส้นขอบรอบการ์ด และเอฟเฟกต์เรืองแสง</p>
+            <h3 class="section-card-title"><span>🎨</span> ปรับแต่งการ์ด &amp; แสงเรือง</h3>
+            <p class="section-card-desc">กำหนดสีพื้นหลังการ์ด ความโค้งมน เส้นขอบรอบการ์ด และเอฟเฟกต์เรืองแสงได้อิสระ</p>
 
-            <!-- Theme Presets Quick Selector -->
-            <div class="form-group theme-select-group">
-              <label for="cardThemeSelect">ธีมการ์ดสำเร็จรูป (Theme Presets)</label>
-              <div class="theme-presets-row">
-                <button type="button" class="theme-preset-btn active" data-theme="purple">🟣 ม่วงนีออน</button>
-                <button type="button" class="theme-preset-btn" data-theme="midnight">🔵 Midnight</button>
-                <button type="button" class="theme-preset-btn" data-theme="cyberpunk">🔴 Cyberpunk</button>
-                <button type="button" class="theme-preset-btn" data-theme="emerald">🟢 Emerald</button>
-                <button type="button" class="theme-preset-btn" data-theme="sunset">🟠 Sunset</button>
-                <button type="button" class="theme-preset-btn" data-theme="stealth">⚫ Stealth</button>
-                <button type="button" class="theme-preset-btn" data-theme="custom">🎨 กำหนดเอง</button>
-              </div>
-              <select id="cardThemeSelect" class="form-select hidden-select">
-                <option value="purple" selected>🟣 ม่วงนีออน (Dark Violet - ค่าเริ่มต้น)</option>
-                <option value="midnight">🔵 น้ำเงินเข้ม (Midnight Obsidian)</option>
-                <option value="cyberpunk">🔴 ชมพูนีออน (Cyberpunk Slate)</option>
-                <option value="emerald">🟢 เขียวมรกต (Emerald Matrix)</option>
-                <option value="sunset">🟠 ส้มอำพัน (Sunset Amber)</option>
-                <option value="stealth">⚫ ดำสนิท (Stealth Black)</option>
-                <option value="custom">🎨 ปรับแต่งสีเองอิสระ (Custom)</option>
-              </select>
-            </div>
+            <input type="hidden" id="cardThemeSelect" value="custom">
 
             <div class="settings-grid">
               <!-- Card Background Color -->
@@ -531,12 +510,6 @@
               </div>
             </div>
           </div>
-
-          <div class="form-submit-row">
-            <button type="submit" class="btn btn-primary btn-save">
-              💾 บันทึกการตั้งค่า (Save Settings)
-            </button>
-          </div>
         </form>
       </div>
 
@@ -579,7 +552,7 @@
                   🔄 ล้างหน้าจอ
                 </button>
               </div>
-              <button type="button" id="sideSaveBtn" class="btn btn-primary btn-save-prominent btn-full">
+              <button type="submit" form="settingsForm" id="sideSaveBtn" class="btn btn-primary btn-save-prominent btn-full">
                 💾 บันทึกการตั้งค่า (Save Settings)
               </button>
             </div>
