@@ -58,6 +58,23 @@ body {
   border-width: 0 !important;
 }
 
+/* Text border (stroke) outline */
+.redeem-card.has-text-border .viewer-name,
+.redeem-card.has-text-border .reward-title,
+.redeem-card.has-text-border .prefix-at,
+.redeem-card.has-text-border .prefix-hash {
+  -webkit-text-stroke: var(--text-border-width, 2px) var(--text-border-color, #000000);
+  paint-order: stroke fill;
+}
+
+.redeem-card.no-text-border .viewer-name,
+.redeem-card.no-text-border .reward-title,
+.redeem-card.no-text-border .prefix-at,
+.redeem-card.no-text-border .prefix-hash {
+  -webkit-text-stroke: 0 transparent !important;
+  paint-order: normal !important;
+}
+
 /* Shadow disabled / transparent state */
 .redeem-card.no-shadow {
   --card-shadow: none !important;
@@ -188,7 +205,7 @@ body {
   margin-right: 1px;
   font-size: 1.05em;
   text-shadow: 0 0 8px var(--at-glow, rgba(251, 191, 36, 0.4));
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease, -webkit-text-stroke 0.3s ease;
 }
 
 .viewer-name {
@@ -198,7 +215,7 @@ body {
   letter-spacing: 0.02em;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   word-break: break-word;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, -webkit-text-stroke 0.3s ease;
 }
 
 .reward-chunk {
@@ -214,7 +231,7 @@ body {
   margin-right: 2px;
   font-size: 1.05em;
   text-shadow: 0 0 8px var(--hash-glow, rgba(168, 85, 247, 0.4));
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease, -webkit-text-stroke 0.3s ease;
 }
 
 .reward-title {
@@ -222,7 +239,7 @@ body {
   font-weight: 600;
   color: var(--reward-color, rgba(255, 255, 255, 0.95));
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, -webkit-text-stroke 0.3s ease;
 }
 
 /* 1st Redeemer Highlight on Single Row Pill */

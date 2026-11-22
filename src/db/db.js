@@ -49,6 +49,9 @@ db.exec(`
     at_color TEXT DEFAULT '#fbbf24',
     hash_color TEXT DEFAULT '#c4b5fd',
     reward_color TEXT DEFAULT '#ffffff',
+    text_border_enabled INTEGER DEFAULT 0,
+    text_border_color TEXT DEFAULT '#000000',
+    text_border_width TEXT DEFAULT '2px',
     border_enabled INTEGER DEFAULT 1,
     bloom_enabled INTEGER DEFAULT 1,
     shadow_enabled INTEGER DEFAULT 1,
@@ -92,6 +95,9 @@ try { db.exec("ALTER TABLE users ADD COLUMN card_radius TEXT DEFAULT '16px';"); 
 try { db.exec("ALTER TABLE users ADD COLUMN at_color TEXT DEFAULT '#fbbf24';"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN hash_color TEXT DEFAULT '#c4b5fd';"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN reward_color TEXT DEFAULT '#ffffff';"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN text_border_enabled INTEGER DEFAULT 0;"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN text_border_color TEXT DEFAULT '#000000';"); } catch {}
+try { db.exec("ALTER TABLE users ADD COLUMN text_border_width TEXT DEFAULT '2px';"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN border_enabled INTEGER DEFAULT 1;"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN bloom_enabled INTEGER DEFAULT 1;"); } catch {}
 try { db.exec("ALTER TABLE users ADD COLUMN shadow_enabled INTEGER DEFAULT 1;"); } catch {}
@@ -203,6 +209,9 @@ export const userRepo = {
     atColor,
     hashColor,
     rewardColor,
+    textBorderEnabled,
+    textBorderColor,
+    textBorderWidth,
     borderEnabled,
     bloomEnabled,
     shadowEnabled,
@@ -238,6 +247,9 @@ export const userRepo = {
         at_color = COALESCE(?, at_color),
         hash_color = COALESCE(?, hash_color),
         reward_color = COALESCE(?, reward_color),
+        text_border_enabled = COALESCE(?, text_border_enabled),
+        text_border_color = COALESCE(?, text_border_color),
+        text_border_width = COALESCE(?, text_border_width),
         border_enabled = COALESCE(?, border_enabled),
         bloom_enabled = COALESCE(?, bloom_enabled),
         shadow_enabled = COALESCE(?, shadow_enabled),
@@ -270,6 +282,9 @@ export const userRepo = {
       effectiveAtColor,
       hashColor !== undefined ? String(hashColor).trim() : null,
       rewardColor !== undefined ? String(rewardColor).trim() : null,
+      textBorderEnabled !== undefined ? (textBorderEnabled ? 1 : 0) : null,
+      textBorderColor !== undefined ? String(textBorderColor).trim() : null,
+      textBorderWidth !== undefined ? String(textBorderWidth).trim() : null,
       borderEnabled !== undefined ? (borderEnabled ? 1 : 0) : null,
       bloomEnabled !== undefined ? (bloomEnabled ? 1 : 0) : null,
       shadowEnabled !== undefined ? (shadowEnabled ? 1 : 0) : null,

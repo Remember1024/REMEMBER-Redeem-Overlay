@@ -27,6 +27,9 @@
   const viewerColorPicker = document.getElementById('viewerColorPicker');
   const hashColorPicker = document.getElementById('hashColorPicker');
   const rewardColorPicker = document.getElementById('rewardColorPicker');
+  const textBorderToggle = document.getElementById('textBorderToggle');
+  const textBorderColorPicker = document.getElementById('textBorderColorPicker');
+  const textBorderWidthSelect = document.getElementById('textBorderWidthSelect');
   const fontFamilySelect = document.getElementById('fontFamilySelect');
   const fontSizeScaleSelect = document.getElementById('fontSizeScaleSelect');
   const cardThemeSelect = document.getElementById('cardThemeSelect');
@@ -146,6 +149,12 @@
     if (viewerColorPicker) viewerColorPicker.value = currentUser.viewerColor || '#ffffff';
     if (hashColorPicker) hashColorPicker.value = currentUser.hashColor || currentUser.cardBorderColor || '#c4b5fd';
     if (rewardColorPicker) rewardColorPicker.value = currentUser.rewardColor || '#ffffff';
+
+    const isTextBorderOn = currentUser.textBorderEnabled !== false && currentUser.textBorderEnabled !== 0 && currentUser.textBorderEnabled !== '0' && currentUser.textBorderColor !== 'transparent';
+    if (textBorderToggle) textBorderToggle.checked = Boolean(isTextBorderOn);
+    if (textBorderColorPicker) textBorderColorPicker.value = (currentUser.textBorderColor && currentUser.textBorderColor !== 'transparent') ? currentUser.textBorderColor : '#000000';
+    if (textBorderWidthSelect) textBorderWidthSelect.value = currentUser.textBorderWidth || '2px';
+
     if (fontFamilySelect) fontFamilySelect.value = currentUser.fontFamily || 'Kanit';
     if (fontSizeScaleSelect) fontSizeScaleSelect.value = String(currentUser.fontSizeScale || 1.0);
     if (cardThemeSelect) cardThemeSelect.value = currentUser.cardTheme || 'purple';
@@ -260,6 +269,20 @@
     chip.addEventListener('click', () => {
       const color = chip.getAttribute('data-color');
       if (rewardColorPicker) rewardColorPicker.value = color;
+      updateLivePreview();
+    });
+  });
+
+  // Text border chips
+  document.querySelectorAll('.text-border-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const color = chip.getAttribute('data-color');
+      if (color === 'transparent') {
+        if (textBorderToggle) textBorderToggle.checked = false;
+      } else {
+        if (textBorderToggle) textBorderToggle.checked = true;
+        if (textBorderColorPicker) textBorderColorPicker.value = color;
+      }
       updateLivePreview();
     });
   });
@@ -383,6 +406,14 @@
   if (viewerColorPicker) viewerColorPicker.addEventListener('input', updateLivePreview);
   if (hashColorPicker) hashColorPicker.addEventListener('input', updateLivePreview);
   if (rewardColorPicker) rewardColorPicker.addEventListener('input', updateLivePreview);
+  if (textBorderToggle) textBorderToggle.addEventListener('change', updateLivePreview);
+  if (textBorderColorPicker) {
+    textBorderColorPicker.addEventListener('input', () => {
+      if (textBorderToggle) textBorderToggle.checked = true;
+      updateLivePreview();
+    });
+  }
+  if (textBorderWidthSelect) textBorderWidthSelect.addEventListener('change', updateLivePreview);
   if (fontFamilySelect) fontFamilySelect.addEventListener('change', updateLivePreview);
   if (fontSizeScaleSelect) fontSizeScaleSelect.addEventListener('change', updateLivePreview);
 
@@ -480,7 +511,24 @@
     }
     if (previewRewardTitle) previewRewardTitle.style.color = rewardColor;
 
-    previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled || borderColor === 'transparent' ? ' no-border' : ''}${!isBloomEnabled || glowColor === 'transparent' ? ' no-bloom' : ''}${!isShadowEnabled || shadowColor === 'transparent' ? ' no-shadow' : ''}${bgOpacity === 0 ? ' transparent-bg' : ''}`;
+    // Text border (stroke) handling
+    const isTextBorderEnabled = Boolean(textBorderToggle?.checked);
+    const textBorderColor = isTextBorderEnabled ? (textBorderColorPicker?.value || '#000000') : 'transparent';
+    const textBorderWidth = textBorderWidthSelect?.value || '2px';
+
+    if (isTextBorderEnabled && textBorderColor !== 'transparent') {
+      previewCard.classList.remove('no-text-border');
+      previewCard.classList.add('has-text-border');
+      previewCard.style.setProperty('--text-border-color', textBorderColor);
+      previewCard.style.setProperty('--text-border-width', textBorderWidth);
+    } else {
+      previewCard.classList.add('no-text-border');
+      previewCard.classList.remove('has-text-border');
+      previewCard.style.setProperty('--text-border-color', 'transparent');
+      previewCard.style.setProperty('--text-border-width', '0px');
+    }
+
+    previewCard.className = `redeem-card theme-${theme} first-redeemer${!isBorderEnabled || borderColor === 'transparent' ? ' no-border' : ''}${!isBloomEnabled || glowColor === 'transparent' ? ' no-bloom' : ''}${!isShadowEnabled || shadowColor === 'transparent' ? ' no-shadow' : ''}${bgOpacity === 0 ? ' transparent-bg' : ''}${isTextBorderEnabled && textBorderColor !== 'transparent' ? ' has-text-border' : ' no-text-border'}`;
 
     let displayTitle = sampleReward;
     if (mode === 'custom') {
@@ -531,6 +579,10 @@
   settingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const isTextBorderEnabled = Boolean(textBorderToggle?.checked);
+    const textBorderColor = isTextBorderEnabled ? (textBorderColorPicker?.value || '#000000') : 'transparent';
+    const textBorderWidth = textBorderWidthSelect?.value || '2px';
+
     const isBorderEnabled = Boolean(borderToggle?.checked);
     const borderColor = isBorderEnabled ? (cardBorderColorPicker?.value || '#c4b5fd') : 'transparent';
     const isBloomEnabled = Boolean(bloomToggle?.checked);
@@ -548,6 +600,9 @@
       atColor: atColorPicker?.value || '#fbbf24',
       hashColor: hashColorPicker?.value || '#c4b5fd',
       rewardColor: rewardColorPicker?.value || '#ffffff',
+      textBorderEnabled: isTextBorderEnabled,
+      textBorderColor: textBorderColor,
+      textBorderWidth: textBorderWidth,
       borderEnabled: isBorderEnabled,
       bloomEnabled: isBloomEnabled,
       shadowEnabled: isShadowEnabled,

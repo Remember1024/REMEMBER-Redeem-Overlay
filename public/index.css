@@ -389,7 +389,8 @@ input[type="text"]:focus,
 .card-bg-chip,
 .card-border-chip,
 .card-glow-chip,
-.card-shadow-chip {
+.card-shadow-chip,
+.text-border-chip {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -410,7 +411,8 @@ input[type="text"]:focus,
 .card-bg-chip:hover,
 .card-border-chip:hover,
 .card-glow-chip:hover,
-.card-shadow-chip:hover {
+.card-shadow-chip:hover,
+.text-border-chip:hover {
   transform: scale(1.15);
   border-color: #fff;
 }
@@ -646,6 +648,23 @@ input[type="text"]:focus,
 .redeem-card.no-border {
   border-color: transparent !important;
   border-width: 0 !important;
+}
+
+/* Text border (stroke) outline */
+.redeem-card.has-text-border .viewer-name,
+.redeem-card.has-text-border .reward-title,
+.redeem-card.has-text-border .prefix-at,
+.redeem-card.has-text-border .prefix-hash {
+  -webkit-text-stroke: var(--text-border-width, 2px) var(--text-border-color, #000000);
+  paint-order: stroke fill;
+}
+
+.redeem-card.no-text-border .viewer-name,
+.redeem-card.no-text-border .reward-title,
+.redeem-card.no-text-border .prefix-at,
+.redeem-card.no-text-border .prefix-hash {
+  -webkit-text-stroke: 0 transparent !important;
+  paint-order: normal !important;
 }
 
 /* Shadow disabled / transparent state */
@@ -1029,7 +1048,8 @@ input[type="text"]:focus,
 /* Transparent Preset Chips */
 .card-border-chip.chip-transparent,
 .card-glow-chip.chip-transparent,
-.card-shadow-chip.chip-transparent {
+.card-shadow-chip.chip-transparent,
+.text-border-chip.chip-transparent {
   position: relative;
   background: repeating-conic-gradient(#334155 0% 25%, #1e293b 0% 50%) 50% / 8px 8px !important;
   border: 1px dashed rgba(255, 255, 255, 0.5) !important;
@@ -1040,7 +1060,8 @@ input[type="text"]:focus,
 
 .card-border-chip.chip-transparent::after,
 .card-glow-chip.chip-transparent::after,
-.card-shadow-chip.chip-transparent::after {
+.card-shadow-chip.chip-transparent::after,
+.text-border-chip.chip-transparent::after {
   content: '✕';
   font-size: 11px;
   color: #f43f5e;

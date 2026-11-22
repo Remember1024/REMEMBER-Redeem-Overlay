@@ -89,6 +89,9 @@ async function runAsyncTest(description, fn) {
       atColor: '#c084fc',
       hashColor: '#38bdf8',
       rewardColor: '#fef08a',
+      textBorderEnabled: true,
+      textBorderColor: '#000000',
+      textBorderWidth: '3px',
       borderEnabled: false,
       bloomEnabled: false,
       shadowEnabled: false,
@@ -114,6 +117,9 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(updatedUser1.at_color, '#c084fc');
     assert.strictEqual(updatedUser1.hash_color, '#38bdf8');
     assert.strictEqual(updatedUser1.reward_color, '#fef08a');
+    assert.strictEqual(updatedUser1.text_border_enabled, 1);
+    assert.strictEqual(updatedUser1.text_border_color, '#000000');
+    assert.strictEqual(updatedUser1.text_border_width, '3px');
     assert.strictEqual(updatedUser1.border_enabled, 0);
     assert.strictEqual(updatedUser1.bloom_enabled, 0);
     assert.strictEqual(updatedUser1.shadow_enabled, 0);
@@ -134,6 +140,9 @@ async function runAsyncTest(description, fn) {
     assert.strictEqual(freshUser2.card_border_color, '#c4b5fd');
     assert.strictEqual(freshUser2.card_glow_color, '#a855f7');
     assert.strictEqual(freshUser2.card_radius, '16px');
+    assert.strictEqual(freshUser2.text_border_enabled, 0);
+    assert.strictEqual(freshUser2.text_border_color, '#000000');
+    assert.strictEqual(freshUser2.text_border_width, '2px');
     assert.strictEqual(freshUser2.border_enabled, 1);
     assert.strictEqual(freshUser2.bloom_enabled, 1);
     assert.strictEqual(freshUser2.shadow_enabled, 1);

@@ -288,6 +288,48 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Text Border (Stroke) Toggle & Color -->
+              <div class="form-group form-group-toggleable">
+                <div class="label-with-toggle">
+                  <label for="textBorderColorPicker">เส้นขอบตัวอักษร (Text Border / Stroke)</label>
+                  <label class="switch-inline">
+                    <input type="checkbox" id="textBorderToggle">
+                    <span class="switch-text">เปิดเส้นขอบ</span>
+                  </label>
+                </div>
+                <div id="textBorderControlsContainer" class="color-picker-row">
+                  <input type="color" id="textBorderColorPicker" value="#000000" class="color-picker">
+                  <div class="color-presets">
+                    <button type="button" class="text-border-chip chip-transparent" data-color="transparent"
+                      title="🚫 ไม่ใส่เลย (ไม่มีเส้นขอบตัวอักษร)" aria-label="Transparent"></button>
+                    <button type="button" class="text-border-chip" data-color="#000000" style="--chip-color: #000000;"
+                      title="Black (ดำสนิท - แนะนำ)" aria-label="Black"></button>
+                    <button type="button" class="text-border-chip" data-color="#18181b" style="--chip-color: #18181b;"
+                      title="Dark Slate (เทาดำเข้ม)" aria-label="Dark Slate"></button>
+                    <button type="button" class="text-border-chip" data-color="#ffffff" style="--chip-color: #ffffff;"
+                      title="White (ขาวสว่าง)" aria-label="White"></button>
+                    <button type="button" class="text-border-chip" data-color="#fbbf24" style="--chip-color: #fbbf24;"
+                      title="Gold (ทอง)" aria-label="Gold"></button>
+                    <button type="button" class="text-border-chip" data-color="#c084fc" style="--chip-color: #c084fc;"
+                      title="Neon Violet (ม่วงนีออน)" aria-label="Neon Violet"></button>
+                    <button type="button" class="text-border-chip" data-color="#38bdf8" style="--chip-color: #38bdf8;"
+                      title="Sky Cyan (ฟ้าไซแอน)" aria-label="Sky Cyan"></button>
+                    <button type="button" class="text-border-chip" data-color="#f43f5e" style="--chip-color: #f43f5e;"
+                      title="Rose Pink (ชมพูโรส)" aria-label="Rose Pink"></button>
+                  </div>
+                </div>
+                <div class="text-border-width-row" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                  <label for="textBorderWidthSelect" style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">ความหนาขอบ:</label>
+                  <select id="textBorderWidthSelect" class="form-select" style="padding: 3px 8px; font-size: 0.8rem; width: auto;">
+                    <option value="1px">1px (บาง)</option>
+                    <option value="2px" selected>2px (ปานกลาง คมชัด - แนะนำ)</option>
+                    <option value="3px">3px (หนา ชัดเจน)</option>
+                    <option value="4px">4px (หนาพิเศษ)</option>
+                  </select>
+                </div>
+                <span class="hint-text">เลือกสีเส้นขอบตัวหนังสือ หรือกด "🚫 ไม่ใส่เลย" ช่วยให้ตัวหนังสืออ่านง่ายและเด่นชัดขึ้น</span>
+              </div>
             </div>
           </div>
 

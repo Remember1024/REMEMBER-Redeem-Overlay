@@ -28,6 +28,9 @@
     atColor: '#fbbf24',
     hashColor: '#c4b5fd',
     rewardColor: '#ffffff',
+    textBorderEnabled: false,
+    textBorderColor: '#000000',
+    textBorderWidth: '2px',
     borderEnabled: true,
     bloomEnabled: true,
     shadowEnabled: true,
@@ -259,6 +262,23 @@
     cardElement.style.setProperty('--hash-color', hashColor);
     cardElement.style.setProperty('--hash-glow', `${hashColor}66`);
     cardElement.style.setProperty('--reward-color', rewardColor);
+
+    // Text border (stroke) handling
+    const isTextBorderEnabled = currentUser.textBorderEnabled !== false && currentUser.textBorderEnabled !== 0 && currentUser.textBorderEnabled !== '0' && currentUser.textBorderColor !== 'transparent';
+    const textBorderColor = currentUser.textBorderColor || '#000000';
+    const textBorderWidth = currentUser.textBorderWidth || '2px';
+
+    if (isTextBorderEnabled && textBorderColor !== 'transparent') {
+      cardElement.classList.remove('no-text-border');
+      cardElement.classList.add('has-text-border');
+      cardElement.style.setProperty('--text-border-color', textBorderColor);
+      cardElement.style.setProperty('--text-border-width', textBorderWidth);
+    } else {
+      cardElement.classList.add('no-text-border');
+      cardElement.classList.remove('has-text-border');
+      cardElement.style.setProperty('--text-border-color', 'transparent');
+      cardElement.style.setProperty('--text-border-width', '0px');
+    }
 
     // Theme & custom card properties
     const themeKey = currentUser.cardTheme || 'purple';
